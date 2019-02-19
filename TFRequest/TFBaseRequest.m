@@ -399,9 +399,10 @@
     
     [self.requestLog appendString:log];
     RequestLog(@"%@",self.requestLog);
+    [[TFRequestManager shareInstance] addLog:[NSString stringWithString:log]];
+    
 #endif
     
-    [[TFRequestManager shareInstance] addLog:[NSString stringWithString:log]];
 }
 
 
