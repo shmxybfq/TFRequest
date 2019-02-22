@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "TFRequest.h"
+#import "TestRequest.h"
 @interface ViewController ()
 
 @end
@@ -17,7 +17,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    [TestRequest requestWithDic:nil requestFinish:^(id request) {
+        
+    } requestFailed:^(id request) {
+        
+    }];
+    
 }
+
+
 
 
 @end

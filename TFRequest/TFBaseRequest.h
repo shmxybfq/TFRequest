@@ -7,27 +7,27 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TFRequestParam.h"
+#import "TFRequestManager.h"
 
 @class AFNetworking;
 @class TFBaseRequest;
-@class TFRequestParam;
-@class TFRequestManager;
 @class AFSecurityPolicy;
 
 #define kNotworkError @"网络连接失败,请检查您的网络连接."
 #define kDataError @"数据格式错误."
 #define kNoNetworkCode (1314)
 
-#ifndef TF_WEAK_OBJ
-#define TF_WEAK_OBJ(TARGET,NAME)  __weak typeof(TARGET) NAME = TARGET;
+#ifndef tf_weak_obj
+#define tf_weak_obj(target,name)  __weak typeof(target) name = target;
 #endif
 #ifndef kdeclare_weakself
-#define kdeclare_weakself TF_WEAK_OBJ(self,weakSelf)
+#define kdeclare_weakself tf_weak_obj(self,weakSelf)
 #endif
 
 
 #ifdef DEBUG
-#   define RequestLog(fmt, ...) NSLog((@"\nfunction:%s,line:%d\n" fmt @"\n"), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#   define RequestLog(fmt, ...) NSLog((@"\nfun:%s,line:%d\n" fmt @"\n"), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
 #else
 #   define RequestLog(...)
 #endif
@@ -66,6 +66,7 @@ typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 
 @protocol TFBaseRequestDelegate <NSObject>
 @optional
+
 /* 请求过程.
  */
 -(BOOL)requestProgressInit:(TFBaseRequest *)request;
