@@ -9,6 +9,8 @@
 #import "ViewController.h"
 #import "TestRequest.h"
 @interface ViewController ()
+@property (weak, nonatomic) IBOutlet UIButton *postButton;
+@property (weak, nonatomic) IBOutlet UITextView *textView;
 
 @end
 
@@ -18,15 +20,22 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    [TestRequest requestWithDic:nil requestFinish:^(id request) {
-        
-    } requestFailed:^(id request) {
-        
-    }];
+    [self.postButton addTarget:self
+                        action:@selector(postButtonClick)
+              forControlEvents:UIControlEventTouchUpInside];
+    
+   
     
 }
 
-
+-(void)postButtonClick{
+    
+    [TestRequest requestWithDic:nil requestFinish:^(TestRequest *request) {
+        self.textView.text = [NSString stringWithFormat:@"%@",request.responseJson];
+    } requestFailed:^(TestRequest *request) {
+        self.textView.text = [NSString stringWithFormat:@"%@",request.error];
+    }];
+}
 
 
 @end

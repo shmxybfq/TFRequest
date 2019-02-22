@@ -47,6 +47,10 @@
                             <constraint firstItem="zOB-X4-dI7" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="30" id="pBk-22-RNv"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="postButton" destination="zOB-X4-dI7" id="PcI-sY-FXq"/>
+                        <outlet property="textView" destination="S7j-ev-Olh" id="Kzv-ef-3QY"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
