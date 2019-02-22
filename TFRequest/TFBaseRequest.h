@@ -9,9 +9,9 @@
 #import <Foundation/Foundation.h>
 
 @class AFNetworking;
-@class TFRequestManager;
-@class TFRequestParam;
 @class TFBaseRequest;
+@class TFRequestParam;
+@class TFRequestManager;
 @class AFSecurityPolicy;
 
 #define kNotworkError @"网络连接失败,请检查您的网络连接."
@@ -43,21 +43,6 @@ typedef NS_ENUM(NSInteger,RequestType) {
     RequestTypeJson = 1,
 };
 
-typedef NS_ENUM(NSInteger,RequestProgress) {
-    RequestProgressInit = 0,
-    RequestProgressWillGetParams,
-    RequestProgressDidGetParams,
-    RequestProgressWillSendRequest,
-    RequestProgressDidSendRequest,
-    RequestProgressProgressingRequest,
-    RequestProgressDidFinishRequest,
-    RequestProgressDidCancelRequest,
-    RequestProgressDidFailedRequest,
-    RequestProgressWillFinishCallBack,
-    RequestProgressDidFinishCallBack,
-    RequestProgressWillFailedCallBack,
-    RequestProgressDidFailedCallBack,
-};
 
 typedef void (^RequestStartBlock)(id request);
 typedef void (^RequestFinishBlock)(id request);
@@ -77,21 +62,17 @@ typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 - (NSDictionary *)configureDefalutParams;
 - (AFSecurityPolicy *)configureSecurityPolicy;
 
-
-
 @end
 
 @protocol TFBaseRequestDelegate <NSObject>
 @optional
-
-
 /* 请求过程.
  */
 -(BOOL)requestProgressInit:(TFBaseRequest *)request;
 -(BOOL)requestProgressWillGetParams:(TFBaseRequest *)request;
 -(BOOL)requestProgressDidGetParams:(TFBaseRequest *)request;
 -(BOOL)requestProgressWillSendRequest:(TFBaseRequest *)request task:(NSURLSessionDataTask *)task;
--(BOOL)requestProgressDidSendRequest:(TFBaseRequest *)request
+-(void)requestProgressDidSendRequest:(TFBaseRequest *)request
                                 task:(NSURLSessionDataTask *)task;
 -(void)requestProgressProgressingRequest:(TFBaseRequest *)request
                                     task:(NSURLSessionDataTask *)task
@@ -127,11 +108,13 @@ typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 @end
 
 
+@class AFHTTPSessionManager;
 @interface TFBaseRequest : NSObject<NSCoding,TFBaseRequestDelegate,TFRequestParamDelegate>
 
 @property (nonatomic,   weak) id<TFBaseRequestDelegate> requestDelegate;
 @property (nonatomic,   weak) id<TFRequestParamDelegate> paramDelegate;
 
+@property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, strong) NSURLSessionDataTask  *task;
 @property (nonatomic,   copy,readonly) RequestStartBlock startBlock;
 @property (nonatomic,   copy,readonly) RequestFinishBlock finishBlock;
@@ -144,16 +127,16 @@ typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 @property (nonatomic,   copy) NSString *totalUrl;
 @property (nonatomic, assign) RequestType requestType;
 @property (nonatomic, assign) RequestMethod requestMethod;
+@property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
 @property (nonatomic, strong) NSDictionary *header;
 @property (nonatomic, strong) TFRequestParam *params;
-@property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
 @property (nonatomic, strong) NSDictionary *defalutParams;
 @property (nonatomic, strong) NSMutableDictionary *totalParams;
-
 
 @property (nonatomic, strong) NSError  *error;
 @property (nonatomic, strong) id responseObject;
 @property (nonatomic, strong) id responseJson;
+
 
 +(instancetype)requestWithDic:(NSDictionary *)dic
                 requestFinish:(RequestFinishBlock)finish

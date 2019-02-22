@@ -7,11 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TFBaseRequest.h"
 
-NS_ASSUME_NONNULL_BEGIN
+@interface TFRequest : TFBaseRequest
 
-@interface TFRequest : NSObject
 
 @end
 
-NS_ASSUME_NONNULL_END

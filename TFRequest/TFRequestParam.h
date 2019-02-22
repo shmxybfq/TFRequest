@@ -8,14 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface TFRequestParam : NSObject
 
 @property (nonatomic, strong)NSDictionary *param;
+@property (nonatomic, assign)BOOL closeLog;
 
 +(instancetype)paramWithDictionary:(NSDictionary *)ins;
 
 @end
 
-NS_ASSUME_NONNULL_END
