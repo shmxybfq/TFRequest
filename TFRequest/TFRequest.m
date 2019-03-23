@@ -32,8 +32,9 @@
         } @catch (NSException *exception) {
             con = NO;
             self.error = error;
-        } @finally {
             RequestLog(@"服务器返回数据解析错误:parse error! : %@",self.responseObject);
+        } @finally {
+            
         }
         if (error == nil) {
             self.responseJson = json;
