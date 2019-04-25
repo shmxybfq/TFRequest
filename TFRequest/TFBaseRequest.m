@@ -25,15 +25,35 @@
 +(instancetype)requestWithParam:(TFRequestParam *)param
                   requestFinish:(RequestFinishBlock)finish
                   requestFailed:(RequestFailedBlock)failed{
+    
     return [self requestWithParam:param
                      requestStart:nil
+                    requestUpload:nil
                   requestProgress:nil
                     requestFinish:finish
-                  requestCanceled:nil requestFailed:failed];
+                  requestCanceled:nil
+                    requestFailed:failed];
 }
 
 +(instancetype)requestWithParam:(TFRequestParam *)param
+                  requestUpload:(RequestUploadDataBlock)upload
+                requestProgress:(RequestProgressBlock)progress
+                  requestFinish:(RequestFinishBlock)finish
+                  requestFailed:(RequestFailedBlock)failed{
+    
+    return [self requestWithParam:param
+                     requestStart:nil
+                    requestUpload:upload
+                  requestProgress:progress
+                    requestFinish:finish
+                  requestCanceled:nil
+                    requestFailed:failed];
+}
+
+
++(instancetype)requestWithParam:(TFRequestParam *)param
                    requestStart:(RequestStartBlock)start
+                  requestUpload:(RequestUploadDataBlock)upload
                 requestProgress:(RequestProgressBlock)progress
                   requestFinish:(RequestFinishBlock)finish
                 requestCanceled:(RequestCanceledBlock)canceled
@@ -41,6 +61,7 @@
     
     id request =  [[[self class]alloc]initWithParam:param
                                        requestStart:start
+                                      requestUpload:upload
                                     requestProgress:progress
                                       requestFinish:finish
                                     requestCanceled:canceled
@@ -156,6 +177,7 @@
 
 -(instancetype)initWithParam:(TFRequestParam *)param
                 requestStart:(RequestStartBlock)start
+               requestUpload:(RequestUploadDataBlock)upload
              requestProgress:(RequestProgressBlock)progress
                requestFinish:(RequestFinishBlock)finish
              requestCanceled:(RequestCanceledBlock)canceled
@@ -164,6 +186,7 @@
         
         //保存 回调 block
         if (start) _startBlock = [start copy];
+        if (upload) _uploadBlock = [upload copy];
         if (progress) _progressBlock = [progress copy];
         if (finish) _finishBlock = [finish copy];
         if (canceled) _canceledBlock = [canceled copy];
@@ -260,6 +283,8 @@
         }
         
         self.task = [self sendRequest];
+        
+        
     }
     return self;
 }
@@ -272,15 +297,15 @@
     self.sessionManager = sessionManager;
     switch (self.requestType) {
         case RequestTypeForm:{
-            sessionManager.requestSerializer     = [AFHTTPRequestSerializer serializer];
+            sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
         }break;
         case RequestTypeJson:{
-            sessionManager.requestSerializer     = [AFJSONRequestSerializer serializer];
+            sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
         }break;
         default:break;
     }
     sessionManager.requestSerializer.timeoutInterval = 30;
-    sessionManager.responseSerializer    = [AFHTTPResponseSerializer serializer];
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
     if (self.header && [self.header isKindOfClass:[NSDictionary class]]) {
         NSArray *keys = self.header.allKeys;
         for (NSString *key in keys) {
@@ -305,7 +330,7 @@
             dataTask = [sessionManager POST:enUrl parameters:enParam progress:^(NSProgress * _Nonnull downloadProgress) {
                 //正在请求
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
-                    [self.requestDelegate requestProgressProgressingRequest:self
+                    [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
                                                                        task:dataTask
                                                                    progress:downloadProgress];
                 }
@@ -313,23 +338,23 @@
                 //请求完成
                 dataTask = task;
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFinishRequest:task:responseObject:)]){
-                    [weakSelf.requestDelegate requestProgressDidFinishRequest:self
+                    [weakSelf.requestDelegate requestProgressDidFinishRequest:weakSelf
                                                                          task:task
                                                                responseObject:responseObject];
                 }
                 if ([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressWillFinishCallBack:task:progress:responseObject:withError:)]) {
                     BOOL con = [weakSelf.requestDelegate requestProgressWillFinishCallBack:weakSelf
-                                                                                  task:task
-                                                                              progress:nil
-                                                                        responseObject:responseObject
-                                                                             withError:nil];
+                                                                                      task:task
+                                                                                  progress:nil
+                                                                            responseObject:responseObject
+                                                                                 withError:nil];
                     if(weakSelf.finishBlock && con){
                         weakSelf.finishBlock(weakSelf);
                         [weakSelf.requestDelegate requestProgressDidFinishCallBack:weakSelf
-                                                                          task:task
-                                                                      progress:nil
-                                                                responseObject:responseObject
-                                                                     withError:nil];
+                                                                              task:task
+                                                                          progress:nil
+                                                                    responseObject:responseObject
+                                                                         withError:nil];
                     }
                 }
                 
@@ -340,23 +365,23 @@
                 dataTask = task;
                 weakSelf.error = error;
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFailedRequest:task:withError:)]){
-                    [weakSelf.requestDelegate requestProgressDidFailedRequest:self
+                    [weakSelf.requestDelegate requestProgressDidFailedRequest:weakSelf
                                                                          task:task
                                                                     withError:error];
                 }
                 if ([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressWillFailedCallBack:task:progress:responseObject:withError:)]) {
                     BOOL con = [weakSelf.requestDelegate requestProgressWillFailedCallBack:weakSelf
-                                                                                  task:task
-                                                                              progress:nil
-                                                                        responseObject:nil
-                                                                             withError:error];
+                                                                                      task:task
+                                                                                  progress:nil
+                                                                            responseObject:nil
+                                                                                 withError:error];
                     if (weakSelf.failedBlock && con) {
                         weakSelf.failedBlock(weakSelf);
                         [weakSelf.requestDelegate requestProgressDidFailedCallBack:weakSelf
-                                                                          task:task
-                                                                      progress:nil
-                                                                responseObject:nil
-                                                                     withError:error];
+                                                                              task:task
+                                                                          progress:nil
+                                                                    responseObject:nil
+                                                                         withError:error];
                     }
                 }
                 [[TFRequestManager shareInstance]removeRequest:weakSelf];
@@ -366,7 +391,7 @@
             dataTask = [sessionManager GET:enUrl parameters:enParam progress:^(NSProgress * _Nonnull downloadProgress) {
                 //正在请求
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
-                    [self.requestDelegate requestProgressProgressingRequest:self
+                    [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
                                                                        task:dataTask
                                                                    progress:downloadProgress];
                 }
@@ -374,7 +399,7 @@
                 //请求完成
                 dataTask = task;
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFinishRequest:task:responseObject:)]){
-                    [weakSelf.requestDelegate requestProgressDidFinishRequest:self
+                    [weakSelf.requestDelegate requestProgressDidFinishRequest:weakSelf
                                                                          task:task
                                                                responseObject:responseObject];
                 }
@@ -399,7 +424,73 @@
                 dataTask = task;
                 weakSelf.error = error;
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFailedRequest:task:withError:)]){
-                    [weakSelf.requestDelegate requestProgressDidFailedRequest:self
+                    [weakSelf.requestDelegate requestProgressDidFailedRequest:weakSelf
+                                                                         task:task
+                                                                    withError:error];
+                }
+                if ([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressWillFailedCallBack:task:progress:responseObject:withError:)]) {
+                    BOOL con = [weakSelf.requestDelegate requestProgressWillFailedCallBack:weakSelf
+                                                                                      task:task
+                                                                                  progress:nil
+                                                                            responseObject:nil
+                                                                                 withError:error];
+                    if (weakSelf.failedBlock && con) {
+                        weakSelf.failedBlock(weakSelf);
+                        [weakSelf.requestDelegate requestProgressDidFailedCallBack:weakSelf
+                                                                              task:task
+                                                                          progress:nil
+                                                                    responseObject:nil
+                                                                         withError:error];
+                    }
+                }
+                [[TFRequestManager shareInstance]removeRequest:weakSelf];
+            }];
+        }break;
+        case RequestMethodUploadPost:{
+            dataTask = [sessionManager POST:enUrl parameters:enParam constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                if (weakSelf.uploadBlock) {
+                    weakSelf.uploadBlock(formData);
+                    if ([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressUploadDidJointedFormdataRequest:task:formData:)]) {
+                        [weakSelf.requestDelegate requestProgressUploadDidJointedFormdataRequest:weakSelf task:dataTask formData:formData];
+                    }
+                }
+            } progress:^(NSProgress * _Nonnull uploadProgress) {
+                //正在请求
+                if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
+                    [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
+                                                                       task:dataTask
+                                                                   progress:uploadProgress];
+                }
+            } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                //请求完成
+                dataTask = task;
+                if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFinishRequest:task:responseObject:)]){
+                    [weakSelf.requestDelegate requestProgressDidFinishRequest:weakSelf
+                                                                         task:task
+                                                               responseObject:responseObject];
+                }
+                if ([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressWillFinishCallBack:task:progress:responseObject:withError:)]) {
+                    BOOL con = [weakSelf.requestDelegate requestProgressWillFinishCallBack:weakSelf
+                                                                                      task:task
+                                                                                  progress:nil
+                                                                            responseObject:responseObject
+                                                                                 withError:nil];
+                    if(weakSelf.finishBlock && con){
+                        weakSelf.finishBlock(weakSelf);
+                        [weakSelf.requestDelegate requestProgressDidFinishCallBack:weakSelf
+                                                                              task:task
+                                                                          progress:nil
+                                                                    responseObject:responseObject
+                                                                         withError:nil];
+                    }
+                }
+                [[TFRequestManager shareInstance]removeRequest:weakSelf];
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                //请求失败
+                dataTask = task;
+                weakSelf.error = error;
+                if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFailedRequest:task:withError:)]){
+                    [weakSelf.requestDelegate requestProgressDidFailedRequest:weakSelf
                                                                          task:task
                                                                     withError:error];
                 }
@@ -453,6 +544,11 @@
 }
 -(void)requestProgressDidSendRequest:(TFBaseRequest *)request
                                 task:(NSURLSessionDataTask *)task{
+    
+}
+-(void)requestProgressUploadDidJointedFormdataRequest:(TFBaseRequest *)request
+                                                 task:(NSURLSessionDataTask *)task
+                                             formData:(id<AFMultipartFormData>)formData{
     
 }
 -(void)requestProgressProgressingRequest:(TFBaseRequest *)request

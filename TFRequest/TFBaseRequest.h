@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AFNetworking.h"
 #import "TFRequestParam.h"
 #import "TFRequestManager.h"
 
@@ -35,7 +36,9 @@
 typedef NS_ENUM(NSInteger,RequestMethod) {
     RequestMethodGet = 0,
     RequestMethodPost = 1,           // content type = @"application/x-www-form-urlencoded"
-    RequestMethodMultipartPost = 2   // content type = @"multipart/form-data"
+    RequestMethodMultipartPost = 2,   // content type = @"multipart/form-data"
+    //mimeType(video):application/octet-stream, mimeType(image):@"image/png",
+    RequestMethodUploadPost = 3
 };
 
 typedef NS_ENUM(NSInteger,RequestType) {
@@ -45,10 +48,12 @@ typedef NS_ENUM(NSInteger,RequestType) {
 
 
 typedef void (^RequestStartBlock)(id request);
+typedef void (^RequestUploadDataBlock)(id <AFMultipartFormData> formData);
+typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 typedef void (^RequestFinishBlock)(id request);
 typedef void (^RequestCanceledBlock)(id request);
 typedef void (^RequestFailedBlock)(id request);
-typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
+
 
 @protocol TFRequestParamDelegate <NSObject>
 
@@ -75,6 +80,9 @@ typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 -(BOOL)requestProgressWillSendRequest:(TFBaseRequest *)request task:(NSURLSessionDataTask *)task;
 -(void)requestProgressDidSendRequest:(TFBaseRequest *)request
                                 task:(NSURLSessionDataTask *)task;
+-(void)requestProgressUploadDidJointedFormdataRequest:(TFBaseRequest *)request
+                                                task:(NSURLSessionDataTask *)task
+                                             formData:(id<AFMultipartFormData>)formData;
 -(void)requestProgressProgressingRequest:(TFBaseRequest *)request
                                     task:(NSURLSessionDataTask *)task
                                 progress:(NSProgress *)progress;
@@ -118,6 +126,7 @@ typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, strong) NSURLSessionDataTask  *task;
 @property (nonatomic,   copy,readonly) RequestStartBlock startBlock;
+@property (nonatomic,   copy,readonly) RequestUploadDataBlock uploadBlock;
 @property (nonatomic,   copy,readonly) RequestFinishBlock finishBlock;
 @property (nonatomic,   copy,readonly) RequestCanceledBlock canceledBlock;
 @property (nonatomic,   copy,readonly) RequestFailedBlock failedBlock;
@@ -148,7 +157,14 @@ typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
                   requestFailed:(RequestFailedBlock)failed;
 
 +(instancetype)requestWithParam:(TFRequestParam *)param
+                  requestUpload:(RequestUploadDataBlock)upload
+                requestProgress:(RequestProgressBlock)progress
+                  requestFinish:(RequestFinishBlock)finish
+                  requestFailed:(RequestFailedBlock)failed;
+
++(instancetype)requestWithParam:(TFRequestParam *)param
                    requestStart:(RequestStartBlock)start
+                  requestUpload:(RequestUploadDataBlock)upload
                 requestProgress:(RequestProgressBlock)progress
                   requestFinish:(RequestFinishBlock)finish
                 requestCanceled:(RequestCanceledBlock)canceled
@@ -156,6 +172,7 @@ typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 
 -(instancetype)initWithParam:(TFRequestParam *)param
                 requestStart:(RequestStartBlock)start
+               requestUpload:(RequestUploadDataBlock)upload
              requestProgress:(RequestProgressBlock)progress
                requestFinish:(RequestFinishBlock)finish
              requestCanceled:(RequestCanceledBlock)canceled
