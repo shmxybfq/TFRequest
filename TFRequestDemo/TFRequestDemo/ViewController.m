@@ -35,7 +35,26 @@
     } requestFailed:^(TestRequest *request) {
         self.textView.text = [NSString stringWithFormat:@"%@",request.error];
     }];
+  
+    //上传图片、视频、其他
+//    [TFRequest requestWithParam:nil requestUpload:^(id<AFMultipartFormData> formData) {
+//
+//        NSData *data = UIImageJPEGRepresentation([UIImage imageNamed:@""], 0.7);
+//        [formData appendPartWithFileData:data
+//                                    name:@"file"
+//                                fileName:[NSString stringWithFormat:@"image%d.jpg",0]
+//                                mimeType:@"image/jpg"];
+//
+//    } requestProgress:^(id request, NSProgress *progress) {
+//
+//    } requestFinish:^(id request) {
+//
+//    } requestFailed:^(id request) {
+//
+//    }];
 }
+
+
 
 
 @end
