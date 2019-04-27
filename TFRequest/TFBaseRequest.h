@@ -7,9 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AFNetworking.h"
+
 #import "TFRequestParam.h"
 #import "TFRequestManager.h"
+#import <AFNetworking/AFNetworking.h>
 
 #define kNoNetworkCode (1314)
 #define kDataError @"数据格式错误."
