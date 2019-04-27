@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AFNetworking.h"
+
 #import "TFRequestParam.h"
 #import "TFRequestManager.h"
 
@@ -48,7 +48,7 @@ typedef NS_ENUM(NSInteger,RequestType) {
 
 
 typedef void (^RequestStartBlock)(id request);
-typedef void (^RequestUploadDataBlock)(id <AFMultipartFormData> formData);
+typedef void (^RequestUploadDataBlock)(id formData);
 typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 typedef void (^RequestFinishBlock)(id request);
 typedef void (^RequestCanceledBlock)(id request);
@@ -82,7 +82,7 @@ typedef void (^RequestFailedBlock)(id request);
                                 task:(NSURLSessionDataTask *)task;
 -(void)requestProgressUploadDidJointedFormdataRequest:(TFBaseRequest *)request
                                                 task:(NSURLSessionDataTask *)task
-                                             formData:(id<AFMultipartFormData>)formData;
+                                             formData:(id)formData;
 -(void)requestProgressProgressingRequest:(TFBaseRequest *)request
                                     task:(NSURLSessionDataTask *)task
                                 progress:(NSProgress *)progress;
