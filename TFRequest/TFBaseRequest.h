@@ -7,17 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "AFNetworking.h"
 #import "TFRequestParam.h"
 #import "TFRequestManager.h"
 
-@class AFNetworking;
-@class TFBaseRequest;
-@class AFSecurityPolicy;
-
-#define kNotworkError @"网络连接失败,请检查您的网络连接."
-#define kDataError @"数据格式错误."
 #define kNoNetworkCode (1314)
+#define kDataError @"数据格式错误."
+#define kNotworkError @"网络连接失败,请检查您的网络连接."
 
 #ifndef tf_weak_obj
 #define tf_weak_obj(target,name)  __weak typeof(target) name = target;
@@ -48,7 +44,7 @@ typedef NS_ENUM(NSInteger,RequestType) {
 
 
 typedef void (^RequestStartBlock)(id request);
-typedef void (^RequestUploadDataBlock)(id formData);
+typedef void (^RequestUploadDataBlock)(id<AFMultipartFormData>formData);
 typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 typedef void (^RequestFinishBlock)(id request);
 typedef void (^RequestCanceledBlock)(id request);
@@ -69,6 +65,8 @@ typedef void (^RequestFailedBlock)(id request);
 
 @end
 
+
+@class TFBaseRequest;
 @protocol TFBaseRequestDelegate <NSObject>
 @optional
 
@@ -120,11 +118,12 @@ typedef void (^RequestFailedBlock)(id request);
 @class AFHTTPSessionManager;
 @interface TFBaseRequest : NSObject<NSCoding,TFBaseRequestDelegate,TFRequestParamDelegate>
 
-@property (nonatomic,   weak) id<TFBaseRequestDelegate> requestDelegate;
 @property (nonatomic,   weak) id<TFRequestParamDelegate> paramDelegate;
+@property (nonatomic,   weak) id<TFBaseRequestDelegate> requestDelegate;
 
-@property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, strong) NSURLSessionDataTask  *task;
+@property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
+
 @property (nonatomic,   copy,readonly) RequestStartBlock startBlock;
 @property (nonatomic,   copy,readonly) RequestUploadDataBlock uploadBlock;
 @property (nonatomic,   copy,readonly) RequestFinishBlock finishBlock;
@@ -138,6 +137,7 @@ typedef void (^RequestFailedBlock)(id request);
 @property (nonatomic, assign) RequestType requestType;
 @property (nonatomic, assign) RequestMethod requestMethod;
 @property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
+
 @property (nonatomic, strong) NSDictionary *header;
 @property (nonatomic, strong) TFRequestParam *params;
 @property (nonatomic, strong) NSDictionary *defalutParams;
@@ -146,7 +146,6 @@ typedef void (^RequestFailedBlock)(id request);
 @property (nonatomic, strong) NSError  *error;
 @property (nonatomic, strong) id responseObject;
 @property (nonatomic, strong) id responseJson;
-
 
 +(instancetype)requestWithDic:(NSDictionary *)dic
                 requestFinish:(RequestFinishBlock)finish

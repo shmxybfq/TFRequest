@@ -10,8 +10,8 @@
 
 @interface TFRequestParam : NSObject
 
-@property (nonatomic, strong)NSDictionary *param;
 @property (nonatomic, assign)BOOL closeLog;
+@property (nonatomic, strong)NSDictionary *param;
 
 +(instancetype)paramWithDictionary:(NSDictionary *)ins;
 

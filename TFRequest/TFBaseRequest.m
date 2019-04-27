@@ -7,8 +7,6 @@
 //
 
 #import "TFBaseRequest.h"
-#import "AFNetworking.h"
-
 @interface TFBaseRequest()
 
 @end;
