@@ -10,6 +10,10 @@
 
 @implementation BaseRequest
 
+-(void)dealloc{
+    NSLog(@">>>>>>>>dealloc 请求释放:%@",[self class]);
+}
+
 #pragma mark ----------------------  配置请求参数   ----------------------
 
 -(NSString *)configureBaseUrl{

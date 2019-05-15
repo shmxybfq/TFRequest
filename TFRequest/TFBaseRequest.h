@@ -146,12 +146,12 @@ typedef void (^RequestFailedBlock)(id request);
 @property (nonatomic, strong) NSURLSessionDataTask  *task;
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 
-@property (nonatomic,   copy,readonly) RequestStartBlock startBlock;
-@property (nonatomic,   copy,readonly) RequestUploadDataBlock uploadBlock;
-@property (nonatomic,   copy,readonly) RequestFinishBlock finishBlock;
-@property (nonatomic,   copy,readonly) RequestCanceledBlock canceledBlock;
-@property (nonatomic,   copy,readonly) RequestFailedBlock failedBlock;
-@property (nonatomic,   copy,readonly) RequestProgressBlock progressBlock;
+@property (nonatomic,   copy) RequestStartBlock startBlock;
+@property (nonatomic,   copy) RequestUploadDataBlock uploadBlock;
+@property (nonatomic,   copy) RequestFinishBlock finishBlock;
+@property (nonatomic,   copy) RequestCanceledBlock canceledBlock;
+@property (nonatomic,   copy) RequestFailedBlock failedBlock;
+@property (nonatomic,   copy) RequestProgressBlock progressBlock;
 
 
 //以下参数可在代理方法requestProgressDidGetParams时(后)取到
@@ -204,6 +204,9 @@ typedef void (^RequestFailedBlock)(id request);
              requestCanceled:(RequestCanceledBlock)canceled
                requestFailed:(RequestFailedBlock)failed;
 
+-(void)beginRequest;
+
+-(void)cancelRequest;
 
 @end
 

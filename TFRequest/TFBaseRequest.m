@@ -64,6 +64,7 @@
                                       requestFinish:finish
                                     requestCanceled:canceled
                                       requestFailed:failed];
+    [(TFBaseRequest *)request beginRequest];
     return request;
 }
 
@@ -183,6 +184,7 @@
     if (self = [super init]) {
         
         //保存 回调 block
+        if (param && [param isKindOfClass:[TFRequestParam class]]) _params = param;
         if (start) _startBlock = [start copy];
         if (upload) _uploadBlock = [upload copy];
         if (progress) _progressBlock = [progress copy];
@@ -190,101 +192,100 @@
         if (canceled) _canceledBlock = [canceled copy];
         if (failed) _failedBlock = [failed copy];
         
-        self.paramDelegate = self;
-        self.requestDelegate = self;
-        
-        [[TFRequestManager shareInstance] addRequest:self];
-        
-        BOOL progressContinue = YES;
-        //对象创建完毕
-        if([self.requestDelegate respondsToSelector:@selector(requestProgressInit:)]){
-            progressContinue = [self.requestDelegate requestProgressInit:self];
-            if (progressContinue == NO) { return self;}
-        }
-        //开始获取参数
-        if([self.requestDelegate respondsToSelector:@selector(requestProgressWillGetParams:)]){
-            progressContinue = [self.requestDelegate requestProgressWillGetParams:self];
-            if (progressContinue == NO) { return self;}
-        }
-        //代理获取baseUrl
-        if ([self.paramDelegate respondsToSelector:@selector(configureBaseUrl)]) {
-            _baseUrl = [[self.paramDelegate configureBaseUrl] copy];
-        }else{
-            _baseUrl = nil;
-        }
-        //代理获取url
-        if ([self.paramDelegate respondsToSelector:@selector(configureUrl)]) {
-            _url = [[self.paramDelegate configureUrl] copy];
-        }else{
-            _url = nil;
-        }
-        //代理获取请求类型
-        if ([self.paramDelegate respondsToSelector:@selector(configureRequestType)]) {
-            _requestType = [self.paramDelegate configureRequestType];
-        }else{
-            _requestType = RequestTypeForm;
-        }
-        //代理获取请求方法
-        if ([self.paramDelegate respondsToSelector:@selector(configureRequestMethod)]) {
-            _requestMethod = [self.paramDelegate configureRequestMethod];
-        }else{
-            _requestMethod = RequestMethodPost;
-        }
-        //代理获取请求头
-        if ([self.paramDelegate respondsToSelector:@selector(configureHeader)]) {
-            _header = [self.paramDelegate configureHeader];
-        }else{
-            _header = nil;
-        }
-        //代理获取默认参数
-        if ([self.paramDelegate respondsToSelector:@selector(configureDefalutParams)]) {
-            _defalutParams = [self.paramDelegate configureDefalutParams];
-        }else{
-            _defalutParams = nil;
-        }
-        //代理获取安全策略
-        if([self.paramDelegate respondsToSelector:@selector(configureSecurityPolicy)]){
-            _securityPolicy = [self.paramDelegate configureSecurityPolicy];
-        }else{
-            _securityPolicy = nil;
-        }
-        
-        //获取参数
-        if (param && [param isKindOfClass:[TFRequestParam class]]) {
-            _params = param;
-        }else{
-            _params = nil;
-        }
-        
-        //拼接 baseUrl 和 Url
-        if ([_baseUrl hasSuffix:@"/"]) {
-            _baseUrl = [_baseUrl substringWithRange:NSMakeRange(0, _baseUrl.length - 1)];
-        }
-        if ([_url hasPrefix:@"/"]) {
-            _url = [_url substringWithRange:NSMakeRange(1, _url.length - 1)];
-        }
-        _totalUrl = [NSString stringWithFormat:@"%@/%@",_baseUrl,_url];
-        
-        //拼接 默认参数 和 参数
-        _totalParams = [[NSMutableDictionary alloc]init];
-        if (_defalutParams && [_defalutParams isKindOfClass:[NSDictionary class]]) {
-            [_totalParams addEntriesFromDictionary:_defalutParams];
-        }
-        if (_params.param && [_params.param isKindOfClass:[NSDictionary class]]) {
-            [_totalParams addEntriesFromDictionary:_params.param];
-        }
-        
-        //参数准备完毕
-        if([self.requestDelegate respondsToSelector:@selector(requestProgressDidGetParams:)]){
-            progressContinue = [self.requestDelegate requestProgressDidGetParams:self];
-            if (progressContinue == NO) { return self;}
-        }
-        
-        self.task = [self sendRequest];
-        
-        
     }
     return self;
+}
+
+-(void)cancelRequest{
+    [[TFRequestManager shareInstance]removeRequest:self];
+}
+
+-(void)beginRequest{
+    
+    self.paramDelegate = self;
+    self.requestDelegate = self;
+    
+    [[TFRequestManager shareInstance] addRequest:self];
+    
+    BOOL progressContinue = YES;
+    //对象创建完毕
+    if([self.requestDelegate respondsToSelector:@selector(requestProgressInit:)]){
+        progressContinue = [self.requestDelegate requestProgressInit:self];
+        if (progressContinue == NO) { return;}
+    }
+    //开始获取参数
+    if([self.requestDelegate respondsToSelector:@selector(requestProgressWillGetParams:)]){
+        progressContinue = [self.requestDelegate requestProgressWillGetParams:self];
+        if (progressContinue == NO) { return;}
+    }
+    //代理获取baseUrl
+    if ([self.paramDelegate respondsToSelector:@selector(configureBaseUrl)]) {
+        _baseUrl = [[self.paramDelegate configureBaseUrl] copy];
+    }else{
+        _baseUrl = nil;
+    }
+    //代理获取url
+    if ([self.paramDelegate respondsToSelector:@selector(configureUrl)]) {
+        _url = [[self.paramDelegate configureUrl] copy];
+    }else{
+        _url = nil;
+    }
+    //代理获取请求类型
+    if ([self.paramDelegate respondsToSelector:@selector(configureRequestType)]) {
+        _requestType = [self.paramDelegate configureRequestType];
+    }else{
+        _requestType = RequestTypeForm;
+    }
+    //代理获取请求方法
+    if ([self.paramDelegate respondsToSelector:@selector(configureRequestMethod)]) {
+        _requestMethod = [self.paramDelegate configureRequestMethod];
+    }else{
+        _requestMethod = RequestMethodPost;
+    }
+    //代理获取请求头
+    if ([self.paramDelegate respondsToSelector:@selector(configureHeader)]) {
+        _header = [self.paramDelegate configureHeader];
+    }else{
+        _header = nil;
+    }
+    //代理获取默认参数
+    if ([self.paramDelegate respondsToSelector:@selector(configureDefalutParams)]) {
+        _defalutParams = [self.paramDelegate configureDefalutParams];
+    }else{
+        _defalutParams = nil;
+    }
+    //代理获取安全策略
+    if([self.paramDelegate respondsToSelector:@selector(configureSecurityPolicy)]){
+        _securityPolicy = [self.paramDelegate configureSecurityPolicy];
+    }else{
+        _securityPolicy = nil;
+    }
+    
+    //拼接 baseUrl 和 Url
+    if ([_baseUrl hasSuffix:@"/"]) {
+        _baseUrl = [_baseUrl substringWithRange:NSMakeRange(0, _baseUrl.length - 1)];
+    }
+    if ([_url hasPrefix:@"/"]) {
+        _url = [_url substringWithRange:NSMakeRange(1, _url.length - 1)];
+    }
+    _totalUrl = [NSString stringWithFormat:@"%@/%@",_baseUrl,_url];
+    
+    //拼接 默认参数 和 参数
+    _totalParams = [[NSMutableDictionary alloc]init];
+    if (_defalutParams && [_defalutParams isKindOfClass:[NSDictionary class]]) {
+        [_totalParams addEntriesFromDictionary:_defalutParams];
+    }
+    if (_params.param && [_params.param isKindOfClass:[NSDictionary class]]) {
+        [_totalParams addEntriesFromDictionary:_params.param];
+    }
+    
+    //参数准备完毕
+    if([self.requestDelegate respondsToSelector:@selector(requestProgressDidGetParams:)]){
+        progressContinue = [self.requestDelegate requestProgressDidGetParams:self];
+        if (progressContinue == NO) { return;}
+    }
+    
+    self.task = [self sendRequest];
 }
 
 -(NSURLSessionDataTask *)sendRequest{

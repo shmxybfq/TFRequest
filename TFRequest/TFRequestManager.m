@@ -55,7 +55,16 @@ static const int _xrequest_max_count = 128;
     [self.lock lock];
     if ([request isKindOfClass:[TFBaseRequest class]]) {
         TFBaseRequest *req = request;
+        if (req.canceledBlock) {
+            req.canceledBlock(req);
+        }
         [req.task cancel];
+        req.startBlock = nil;
+        req.uploadBlock = nil;
+        req.finishBlock = nil;
+        req.canceledBlock = nil;
+        req.failedBlock = nil;
+        req.progressBlock = nil;
         [self.requests removeObject:request];
     }
     [self.lock unlock];
