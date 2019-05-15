@@ -30,12 +30,11 @@
 
 -(void)postButtonClick{
     
-    TestRequest *request = [TestRequest requestWithDic:nil requestFinish:^(TestRequest *request) {
+    [TestRequest requestWithDic:nil requestFinish:^(TestRequest *request) {
         self.textView.text = [NSString stringWithFormat:@"%@",request.responseJson];
     } requestFailed:^(TestRequest *request) {
         self.textView.text = [NSString stringWithFormat:@"%@",request.error];
     }];
-    [request cancelRequest];
   
     //上传图片、视频、其他
     [TFRequest requestWithParam:nil requestUpload:^(id<AFMultipartFormData> formData) {
