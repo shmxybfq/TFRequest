@@ -24,6 +24,7 @@
                         action:@selector(postButtonClick)
               forControlEvents:UIControlEventTouchUpInside];
     
+
    
     
 }
