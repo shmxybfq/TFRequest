@@ -81,26 +81,30 @@
     NSMutableString *log = [NSMutableString string];
     [log appendFormat:@"\n===================== request-begin ====================="];
     [log appendFormat:@"\n"];
-    [log appendFormat:@"\n time:(%@)",[NSDate date]];
+    [log appendFormat:@"\n 【time】:(%@)",[NSDate date]];
     [log appendFormat:@"\n"];
     [log appendFormat:@"\n [#placeholder#]"];
     [log appendFormat:@"\n"];
-    [log appendFormat:@"\n url:(%@)",self.totalUrl];
+    [log appendFormat:@"\n 【url】:(%@)",self.totalUrl];
     [log appendFormat:@"\n"];
-    [log appendFormat:@"\n header:(%@)",self.header];
+    [log appendFormat:@"\n 【custem-header】:(%@)",self.header];
     [log appendFormat:@"\n"];
-    [log appendFormat:@"\n param:%@",self.params.param];
+    [log appendFormat:@"\n 【all-header】:(%@)",self.task.currentRequest.allHTTPHeaderFields];
     [log appendFormat:@"\n"];
-    [log appendFormat:@"\n defalutParams:%@",self.defalutParams];
+    [log appendFormat:@"\n 【param】:%@",self.params.param];
     [log appendFormat:@"\n"];
-    [log appendFormat:@"\n totalParams:%@",self.totalParams];
+    [log appendFormat:@"\n 【defalutParams】:%@",self.defalutParams];
+    [log appendFormat:@"\n"];
+    [log appendFormat:@"\n 【totalParams】:%@",self.totalParams];
     [log appendFormat:@"\n"];
     if(suc){
-        [log appendFormat:@"\nserver原数据 string:\n%@",[[NSString alloc]initWithData:self.responseObject encoding:NSUTF8StringEncoding]];
-        [log appendFormat:@"\nserver原数据 json:%@",self.responseJson];
-        [log appendFormat:@"\nserver原数据转中文 json:%@",dataString];
+        [log appendFormat:@"\n【server origin data】:%@",[[NSString alloc]initWithData:self.responseObject encoding:NSUTF8StringEncoding]];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n【server origin json】:%@",self.responseJson];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n【server origin json to chinese】:%@",dataString];
     }else{
-        [log appendFormat:@"\n error:%@",self.error];
+        [log appendFormat:@"\n【error】:%@",self.error];
     }
     [log appendFormat:@"\n"];
     [log appendFormat:@"\n [#placeholder#]"];
