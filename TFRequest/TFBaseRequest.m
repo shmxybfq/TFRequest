@@ -188,43 +188,53 @@
         progressContinue = [self.requestDelegate requestProgressWillGetParams:self];
         if (progressContinue == NO) { return;}
     }
-    //代理获取baseUrl
+    //获取baseUrl
     if ([self.paramDelegate respondsToSelector:@selector(configureBaseUrl)]) {
         _baseUrl = [[self.paramDelegate configureBaseUrl] copy];
     }else{
         _baseUrl = nil;
     }
-    //代理获取url
+    //获取url
     if ([self.paramDelegate respondsToSelector:@selector(configureUrl)]) {
         _url = [[self.paramDelegate configureUrl] copy];
     }else{
         _url = nil;
     }
-    //代理获取请求类型
+    //获取请求类型
     if ([self.paramDelegate respondsToSelector:@selector(configureRequestType)]) {
         _requestType = [self.paramDelegate configureRequestType];
     }else{
         _requestType = RequestTypeForm;
     }
-    //代理获取请求方法
+    //获取请求方法
     if ([self.paramDelegate respondsToSelector:@selector(configureRequestMethod)]) {
         _requestMethod = [self.paramDelegate configureRequestMethod];
     }else{
         _requestMethod = RequestMethodPost;
     }
-    //代理获取请求头
+    //获取请求头
     if ([self.paramDelegate respondsToSelector:@selector(configureHeader)]) {
-        _header = [self.paramDelegate configureHeader];
+        NSDictionary *dic = [self.paramDelegate configureHeader];
+        if (dic && [dic isKindOfClass:[NSDictionary class]]) {
+            _header = [NSMutableDictionary dictionaryWithDictionary:dic];
+        }else{
+            _header = nil;
+        }
     }else{
         _header = nil;
     }
-    //代理获取默认参数
+    //获取默认参数
     if ([self.paramDelegate respondsToSelector:@selector(configureDefalutParams)]) {
-        _defalutParams = [self.paramDelegate configureDefalutParams];
+        NSDictionary *dic = [self.paramDelegate configureDefalutParams];
+        if (dic && [dic isKindOfClass:[NSDictionary class]]) {
+            _defalutParams = [NSMutableDictionary dictionaryWithDictionary:dic];
+        }else{
+            _defalutParams = nil;
+        }
     }else{
         _defalutParams = nil;
     }
-    //代理获取安全策略
+    //获取安全策略
     if([self.paramDelegate respondsToSelector:@selector(configureSecurityPolicy)]){
         _securityPolicy = [self.paramDelegate configureSecurityPolicy];
     }else{

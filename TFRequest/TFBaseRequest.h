@@ -162,9 +162,9 @@ typedef void (^RequestFailedBlock)(id request);
 @property (nonatomic, assign) RequestMethod requestMethod;//请求方法
 @property (nonatomic, strong) AFSecurityPolicy *securityPolicy;//隐私策略
 
-@property (nonatomic, strong) NSDictionary *header;//请求头
+@property (nonatomic, strong) NSMutableDictionary *header;//请求头
 @property (nonatomic, strong) TFRequestParam *params;//请求参数
-@property (nonatomic, strong) NSDictionary *defalutParams;//请求默认参数
+@property (nonatomic, strong) NSMutableDictionary *defalutParams;//请求默认参数
 @property (nonatomic, strong) NSMutableDictionary *totalParams;//params.param和defalutParams的和
 
 //以下参数可在代理方法requestProgressDidFailedRequest时(后)取到
