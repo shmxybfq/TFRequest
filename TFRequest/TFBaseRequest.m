@@ -41,7 +41,7 @@
                   requestFailed:(RequestFailedBlock)failed{
     
     return [self requestWithParam:param
-                           inView:nil
+                           inView:inView
                      requestStart:nil
                     requestUpload:nil
                   requestProgress:nil
