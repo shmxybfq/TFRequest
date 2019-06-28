@@ -167,6 +167,9 @@ typedef void (^RequestFailedBlock)(id request);
 @property (nonatomic, strong) NSMutableDictionary *defalutParams;//请求默认参数
 @property (nonatomic, strong) NSMutableDictionary *totalParams;//params.param和defalutParams的和
 
+//用户默认处理弹框和loading的view
+@property (nonatomic,   weak) UIView *inView;
+
 //以下参数可在代理方法requestProgressDidFailedRequest时(后)取到
 @property (nonatomic, strong) NSError  *error;
 
@@ -174,7 +177,13 @@ typedef void (^RequestFailedBlock)(id request);
 @property (nonatomic, strong) id responseObject;
 @property (nonatomic, strong) id responseJson;
 
+
 +(instancetype)requestWithDic:(NSDictionary *)dic
+                requestFinish:(RequestFinishBlock)finish
+                requestFailed:(RequestFailedBlock)failed;
+
++(instancetype)requestWithDic:(NSDictionary *)dic
+                       inView:(UIView *)inView
                 requestFinish:(RequestFinishBlock)finish
                 requestFailed:(RequestFailedBlock)failed;
 
@@ -183,12 +192,20 @@ typedef void (^RequestFailedBlock)(id request);
                   requestFailed:(RequestFailedBlock)failed;
 
 +(instancetype)requestWithParam:(TFRequestParam *)param
+                         inView:(UIView *)inView
+                  requestFinish:(RequestFinishBlock)finish
+                  requestFailed:(RequestFailedBlock)failed;
+
++(instancetype)requestWithParam:(TFRequestParam *)param
+                         inView:(UIView *)inView
                   requestUpload:(RequestUploadDataBlock)upload
                 requestProgress:(RequestProgressBlock)progress
                   requestFinish:(RequestFinishBlock)finish
                   requestFailed:(RequestFailedBlock)failed;
 
+
 +(instancetype)requestWithParam:(TFRequestParam *)param
+                         inView:(UIView *)inView
                    requestStart:(RequestStartBlock)start
                   requestUpload:(RequestUploadDataBlock)upload
                 requestProgress:(RequestProgressBlock)progress
@@ -197,6 +214,7 @@ typedef void (^RequestFailedBlock)(id request);
                   requestFailed:(RequestFailedBlock)failed;
 
 -(instancetype)initWithParam:(TFRequestParam *)param
+                      inView:(UIView *)inView
                 requestStart:(RequestStartBlock)start
                requestUpload:(RequestUploadDataBlock)upload
              requestProgress:(RequestProgressBlock)progress

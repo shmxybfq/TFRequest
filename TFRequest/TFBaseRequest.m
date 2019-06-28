@@ -13,18 +13,35 @@
 
 @implementation TFBaseRequest
 
+
 +(instancetype)requestWithDic:(NSDictionary *)dic
                 requestFinish:(RequestFinishBlock)finish
                 requestFailed:(RequestFailedBlock)failed{
     TFRequestParam *param = [TFRequestParam paramWithDictionary:dic];
-    return [self requestWithParam:param requestFinish:finish requestFailed:failed];
+    return [self requestWithParam:param inView:nil requestFinish:finish requestFailed:failed];
+}
+
++(instancetype)requestWithDic:(NSDictionary *)dic
+                       inView:(UIView *)inView
+                requestFinish:(RequestFinishBlock)finish
+                requestFailed:(RequestFailedBlock)failed{
+    TFRequestParam *param = [TFRequestParam paramWithDictionary:dic];
+    return [self requestWithParam:param inView:inView requestFinish:finish requestFailed:failed];
 }
 
 +(instancetype)requestWithParam:(TFRequestParam *)param
                   requestFinish:(RequestFinishBlock)finish
                   requestFailed:(RequestFailedBlock)failed{
+    return [self requestWithParam:param inView:nil requestFinish:finish requestFailed:failed];
+}
+
++(instancetype)requestWithParam:(TFRequestParam *)param
+                         inView:(UIView *)inView
+                  requestFinish:(RequestFinishBlock)finish
+                  requestFailed:(RequestFailedBlock)failed{
     
     return [self requestWithParam:param
+                           inView:nil
                      requestStart:nil
                     requestUpload:nil
                   requestProgress:nil
@@ -34,12 +51,14 @@
 }
 
 +(instancetype)requestWithParam:(TFRequestParam *)param
+                         inView:(UIView *)inView
                   requestUpload:(RequestUploadDataBlock)upload
                 requestProgress:(RequestProgressBlock)progress
                   requestFinish:(RequestFinishBlock)finish
                   requestFailed:(RequestFailedBlock)failed{
     
     return [self requestWithParam:param
+                           inView:inView
                      requestStart:nil
                     requestUpload:upload
                   requestProgress:progress
@@ -50,6 +69,7 @@
 
 
 +(instancetype)requestWithParam:(TFRequestParam *)param
+                         inView:(UIView *)inView
                    requestStart:(RequestStartBlock)start
                   requestUpload:(RequestUploadDataBlock)upload
                 requestProgress:(RequestProgressBlock)progress
@@ -58,6 +78,7 @@
                   requestFailed:(RequestFailedBlock)failed{
     
     id request =  [[[self class]alloc]initWithParam:param
+                                             inView:inView
                                        requestStart:start
                                       requestUpload:upload
                                     requestProgress:progress
@@ -145,6 +166,7 @@
 
 
 -(instancetype)initWithParam:(TFRequestParam *)param
+                      inView:(UIView *)inView
                 requestStart:(RequestStartBlock)start
                requestUpload:(RequestUploadDataBlock)upload
              requestProgress:(RequestProgressBlock)progress
@@ -155,6 +177,7 @@
         
         //保存 回调 block
         if (param && [param isKindOfClass:[TFRequestParam class]]) _params = param;
+        if (inView) _inView = inView;
         if (start) _startBlock = [start copy];
         if (upload) _uploadBlock = [upload copy];
         if (progress) _progressBlock = [progress copy];

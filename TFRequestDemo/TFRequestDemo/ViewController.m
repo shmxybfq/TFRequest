@@ -38,7 +38,7 @@
     }];
   
     //上传图片、视频、其他
-    [TFRequest requestWithParam:nil requestUpload:^(id<AFMultipartFormData> formData) {
+    [TFRequest requestWithParam:nil inView:nil requestUpload:^(id<AFMultipartFormData> formData) {
 
         NSData *data = UIImageJPEGRepresentation([UIImage imageNamed:@""], 0.7);
         [formData appendPartWithFileData:data
