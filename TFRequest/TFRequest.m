@@ -11,46 +11,33 @@
 #import "TFRequestManager.h"
 @implementation TFRequest
 
--(BOOL)requestProgressWillFinishCallBack:(TFBaseRequest *)request
-                                    task:(NSURLSessionDataTask *)task
-                                progress:(NSProgress *)progress
-                          responseObject:(id)responseObject
-                               withError:(NSError *)error{
-    
-    BOOL con = [super requestProgressWillFinishCallBack:request
-                                                   task:task
-                                               progress:progress
-                                         responseObject:responseObject
-                                              withError:error];
-    if (con) {
-        NSError *error = nil;
-        id json = nil;
-        @try {
-            json = [NSJSONSerialization JSONObjectWithData:self.responseObject
-                                                   options:NSJSONReadingMutableLeaves
-                                                     error:&error];
-        } @catch (NSException *exception) {
-            con = NO;
-            self.error = error;
-            RequestLog(@"服务器返回数据解析错误:parse error! : %@",self.responseObject);
-        } @finally {
-            
-        }
-        if (error == nil) {
-            self.responseJson = json;
-        }
-    }
-    return con;
-}
-
-
 -(void)requestProgressDidFinishRequest:(TFBaseRequest *)request task:(NSURLSessionDataTask *)task responseObject:(id)responseObject{
+    
     [super requestProgressDidFinishRequest:request task:task responseObject:responseObject];
+    
+    NSError *error = nil;
+    id json = nil;
+    @try {
+        json = [NSJSONSerialization JSONObjectWithData:self.responseObject
+                                               options:NSJSONReadingMutableLeaves
+                                                 error:&error];
+    } @catch (NSException *exception) {
+        self.error = error;
+        RequestLog(@"服务器返回数据解析错误:parse error! : %@",self.responseObject);
+    } @finally {
+        
+    }
+    if (error == nil) {
+        self.responseJson = json;
+    }
+    
     [self doLogWithSuccess:YES];
 }
 
 -(void)requestProgressDidFailedRequest:(TFBaseRequest *)request task:(NSURLSessionDataTask *)task withError:(NSError *)error{
+    
     [super requestProgressDidFailedRequest:request task:task withError:error];
+    
     [self doLogWithSuccess:NO];
 }
 
