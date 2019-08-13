@@ -28,6 +28,7 @@ static TFRequestManager *_requestManager = nil;
 
 -(instancetype)init{
     if (self = [super init]) {
+        self.lock = [[NSLock alloc]init];
     }
     return self;
 }
