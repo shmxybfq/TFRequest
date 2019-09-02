@@ -9,6 +9,8 @@
 #import "TFBaseRequest.h"
 @interface TFBaseRequest()
 
+
+
 @end;
 
 @implementation TFBaseRequest
@@ -82,9 +84,31 @@
                                        requestStart:start
                                       requestUpload:upload
                                     requestProgress:progress
+                                         completion:nil
                                       requestFinish:finish
                                     requestCanceled:canceled
                                       requestFailed:failed];
+    [(TFBaseRequest *)request beginRequest];
+    return request;
+}
+
+
++(instancetype)requestWithDownloadRequest:(NSURLRequest *)downRequest
+                                   inView:(UIView *)inView
+                             requestStart:(RequestStartBlock)start
+                          requestProgress:(RequestProgressBlock)progress
+                               completion:(RequestDownloadcompletionBlock)completion{
+    TFRequestParam *param = [TFRequestParam new];
+    id request =  [[[self class]alloc]initWithParam:param
+                                             inView:inView
+                                       requestStart:start
+                                      requestUpload:nil
+                                    requestProgress:progress
+                                         completion:completion
+                                      requestFinish:nil
+                                    requestCanceled:nil
+                                      requestFailed:nil];
+    ((TFBaseRequest *)request).downLoadRequest = downRequest;
     [(TFBaseRequest *)request beginRequest];
     return request;
 }
@@ -144,6 +168,17 @@
 - (NSString *)configureUrl{
     return @"";
 }
+
+- (NSData   *)configureDownloadResumeData{
+    return nil;
+}
+- (NSURL    *)configureDownloadDestinationPath:(NSURL *)targetPath response:(NSURLResponse *)response{
+    NSString *date = [NSDate date].description;
+    date = [date stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSString *filePath = [NSString stringWithFormat:@"%@%@.tmp",NSTemporaryDirectory(),date];
+    return [NSURL fileURLWithPath:filePath];
+}
+
 - (RequestType)configureRequestType {
     return RequestTypeForm;
 }
@@ -170,6 +205,7 @@
                 requestStart:(RequestStartBlock)start
                requestUpload:(RequestUploadDataBlock)upload
              requestProgress:(RequestProgressBlock)progress
+                  completion:(RequestDownloadcompletionBlock)completion
                requestFinish:(RequestFinishBlock)finish
              requestCanceled:(RequestCanceledBlock)canceled
                requestFailed:(RequestFailedBlock)failed{
@@ -181,6 +217,7 @@
         if (start) _startBlock = [start copy];
         if (upload) _uploadBlock = [upload copy];
         if (progress) _progressBlock = [progress copy];
+        if (completion) _downloadcompletionBlock = [completion copy];
         if (finish) _finishBlock = [finish copy];
         if (canceled) _canceledBlock = [canceled copy];
         if (failed) _failedBlock = [failed copy];
@@ -291,7 +328,7 @@
     self.task = [self sendRequest];
 }
 
--(NSURLSessionDataTask *)sendRequest{
+-(NSURLSessionTask *)sendRequest{
     
     kdeclare_weakself;
     BOOL progressContinue = YES;
@@ -320,25 +357,29 @@
     NSString *enUrl = @"";
     enUrl = [self.totalUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *enParam = [_totalParams isKindOfClass:[NSDictionary class]]?_totalParams:@{};
-    __block NSURLSessionDataTask *dataTask = nil;
+    __block NSURLSessionTask *sessionTask = nil;
+    
+    
     //将要发送请求
     if([self.requestDelegate respondsToSelector:@selector(requestProgressWillSendRequest:task:)]){
         progressContinue = [self.requestDelegate requestProgressWillSendRequest:self
-                                                                           task:dataTask];
-        if (progressContinue == NO) { return dataTask;}
+                                                                           task:sessionTask];
+        if (progressContinue == NO) { return sessionTask;}
     }
     switch (self.requestMethod) {
         case RequestMethodPost:{
-            dataTask = [sessionManager POST:enUrl parameters:enParam progress:^(NSProgress * _Nonnull downloadProgress) {
+            self.startTime = CFAbsoluteTimeGetCurrent();
+            sessionTask = [sessionManager POST:enUrl parameters:enParam progress:^(NSProgress * _Nonnull downloadProgress) {
                 //正在请求
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
                     [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
-                                                                       task:dataTask
-                                                                   progress:downloadProgress];
+                                                                           task:sessionTask
+                                                                       progress:downloadProgress];
                 }
             } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 //请求完成
-                dataTask = task;
+                weakSelf.endTime = CFAbsoluteTimeGetCurrent();
+                sessionTask = task;
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFinishRequest:task:responseObject:)]){
                     [weakSelf.requestDelegate requestProgressDidFinishRequest:weakSelf
                                                                          task:task
@@ -361,10 +402,10 @@
                 }
                 
                 [[TFRequestManager shareInstance]removeRequest:weakSelf];
-                
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 //请求失败
-                dataTask = task;
+                weakSelf.endTime = CFAbsoluteTimeGetCurrent();
+                sessionTask = task;
                 weakSelf.error = error;
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFailedRequest:task:withError:)]){
                     [weakSelf.requestDelegate requestProgressDidFailedRequest:weakSelf
@@ -390,16 +431,18 @@
             }];
         }break;
         case RequestMethodGet:{
-            dataTask = [sessionManager GET:enUrl parameters:enParam progress:^(NSProgress * _Nonnull downloadProgress) {
+            self.startTime = CFAbsoluteTimeGetCurrent();
+            sessionTask = [sessionManager GET:enUrl parameters:enParam progress:^(NSProgress * _Nonnull downloadProgress) {
                 //正在请求
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
                     [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
-                                                                       task:dataTask
-                                                                   progress:downloadProgress];
+                                                                           task:sessionTask
+                                                                       progress:downloadProgress];
                 }
             } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 //请求完成
-                dataTask = task;
+                weakSelf.endTime = CFAbsoluteTimeGetCurrent();
+                sessionTask = task;
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFinishRequest:task:responseObject:)]){
                     [weakSelf.requestDelegate requestProgressDidFinishRequest:weakSelf
                                                                          task:task
@@ -423,7 +466,8 @@
                 [[TFRequestManager shareInstance]removeRequest:weakSelf];
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 //请求失败
-                dataTask = task;
+                weakSelf.endTime = CFAbsoluteTimeGetCurrent();
+                sessionTask = task;
                 weakSelf.error = error;
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFailedRequest:task:withError:)]){
                     [weakSelf.requestDelegate requestProgressDidFailedRequest:weakSelf
@@ -449,23 +493,25 @@
             }];
         }break;
         case RequestMethodUploadPost:{
-            dataTask = [sessionManager POST:enUrl parameters:enParam constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+            self.startTime = CFAbsoluteTimeGetCurrent();
+            sessionTask = [sessionManager POST:enUrl parameters:enParam constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
                 if (weakSelf.uploadBlock) {
                     weakSelf.uploadBlock(formData);
                     if ([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressUploadDidJointedFormdataRequest:task:formData:)]) {
-                        [weakSelf.requestDelegate requestProgressUploadDidJointedFormdataRequest:weakSelf task:dataTask formData:formData];
+                        [weakSelf.requestDelegate requestProgressUploadDidJointedFormdataRequest:weakSelf task:sessionTask formData:formData];
                     }
                 }
             } progress:^(NSProgress * _Nonnull uploadProgress) {
                 //正在请求
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
                     [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
-                                                                       task:dataTask
-                                                                   progress:uploadProgress];
+                                                                           task:sessionTask
+                                                                       progress:uploadProgress];
                 }
             } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 //请求完成
-                dataTask = task;
+                weakSelf.endTime = CFAbsoluteTimeGetCurrent();
+                sessionTask = task;
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFinishRequest:task:responseObject:)]){
                     [weakSelf.requestDelegate requestProgressDidFinishRequest:weakSelf
                                                                          task:task
@@ -489,7 +535,8 @@
                 [[TFRequestManager shareInstance]removeRequest:weakSelf];
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 //请求失败
-                dataTask = task;
+                weakSelf.endTime = CFAbsoluteTimeGetCurrent();
+                sessionTask = task;
                 weakSelf.error = error;
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFailedRequest:task:withError:)]){
                     [weakSelf.requestDelegate requestProgressDidFailedRequest:weakSelf
@@ -514,15 +561,98 @@
                 [[TFRequestManager shareInstance]removeRequest:weakSelf];
             }];
         }break;
+        case RequestMethodDownload:{
+            NSData *data = [self configureDownloadResumeData];
+            if (data && [data isKindOfClass:[NSData class]]) {
+                self.startTime = CFAbsoluteTimeGetCurrent();
+                sessionTask = [sessionManager downloadTaskWithResumeData:data progress:^(NSProgress * _Nonnull downloadProgress) {
+                    //正在下载
+                    if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
+                        [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
+                                                                               task:sessionTask
+                                                                           progress:downloadProgress];
+                    }
+                } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
+                    weakSelf.response = response;
+                    return [weakSelf configureDownloadDestinationPath:targetPath response:response];
+                } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+                    //下载完成
+                    weakSelf.endTime = CFAbsoluteTimeGetCurrent();
+                    weakSelf.response = response;
+                    weakSelf.error = error;
+                    if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFinishRequest:task:responseObject:)]){
+                        [weakSelf.requestDelegate requestProgressDidFinishRequest:weakSelf
+                                                                             task:sessionTask
+                                                                   responseObject:nil];
+                    }
+                    if ([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressWillFinishCallBack:task:progress:responseObject:withError:)]) {
+                        BOOL con = [weakSelf.requestDelegate requestProgressWillFinishCallBack:weakSelf
+                                                                                          task:sessionTask
+                                                                                      progress:nil
+                                                                                responseObject:nil
+                                                                                     withError:error];
+                        if(weakSelf.finishBlock && con){
+                            weakSelf.finishBlock(weakSelf);
+                            [weakSelf.requestDelegate requestProgressDidFinishCallBack:weakSelf
+                                                                                  task:sessionTask
+                                                                              progress:nil
+                                                                        responseObject:error
+                                                                             withError:nil];
+                        }
+                    }
+                    [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                }];
+            }else{
+                self.startTime = CFAbsoluteTimeGetCurrent();
+                
+                sessionTask = [sessionManager downloadTaskWithRequest:self.downLoadRequest progress:^(NSProgress * _Nonnull downloadProgress) {
+                    //正在下载
+                    if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
+                        [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
+                                                                               task:sessionTask
+                                                                           progress:downloadProgress];
+                    }
+                } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
+                    weakSelf.response = response;
+                    return [weakSelf configureDownloadDestinationPath:targetPath response:response];
+                } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+                    //下载完成
+                    weakSelf.endTime = CFAbsoluteTimeGetCurrent();
+                    weakSelf.response = response;
+                    weakSelf.error = error;
+                    if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFinishRequest:task:responseObject:)]){
+                        [weakSelf.requestDelegate requestProgressDidFinishRequest:weakSelf
+                                                                             task:sessionTask
+                                                                   responseObject:nil];
+                    }
+                    if ([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressWillFinishCallBack:task:progress:responseObject:withError:)]) {
+                        BOOL con = [weakSelf.requestDelegate requestProgressWillFinishCallBack:weakSelf
+                                                                                          task:sessionTask
+                                                                                      progress:nil
+                                                                                responseObject:nil
+                                                                                     withError:error];
+                        if(weakSelf.finishBlock && con){
+                            weakSelf.finishBlock(weakSelf);
+                            [weakSelf.requestDelegate requestProgressDidFinishCallBack:weakSelf
+                                                                                  task:sessionTask
+                                                                              progress:nil
+                                                                        responseObject:error
+                                                                             withError:nil];
+                        }
+                    }
+                    [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                }];
+            }
+        }
         default:break;
     }
     //已经发送请求等待请求结果
     if([self requestDelegate]){
         if ([self.requestDelegate respondsToSelector:@selector(requestProgressDidSendRequest:task:)]) {
-            [weakSelf.requestDelegate requestProgressDidSendRequest:self task:dataTask];
+            [weakSelf.requestDelegate requestProgressDidSendRequest:self task:sessionTask];
         }
     }
-    return dataTask;
+    return sessionTask;
 }
 
 

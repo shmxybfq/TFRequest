@@ -37,7 +37,8 @@ typedef NS_ENUM(NSInteger,RequestMethod) {
     RequestMethodPost = 1,           // content type = @"application/x-www-form-urlencoded"
     RequestMethodMultipartPost = 2,   // content type = @"multipart/form-data"
     //mimeType(video):application/octet-stream, mimeType(image):@"image/png",
-    RequestMethodUploadPost = 3
+    RequestMethodUploadPost = 3,
+    RequestMethodDownload = 4,
 };
 
 //请求方式,default=RequestTypeForm
@@ -48,11 +49,14 @@ typedef NS_ENUM(NSInteger,RequestType) {
 
 //请求回调block
 typedef void (^RequestStartBlock)(id request);
-typedef void (^RequestUploadDataBlock)(id<AFMultipartFormData>formData);
 typedef void (^RequestProgressBlock)(id request,NSProgress *progress);
 typedef void (^RequestFinishBlock)(id request);
 typedef void (^RequestCanceledBlock)(id request);
 typedef void (^RequestFailedBlock)(id request);
+//上传block
+typedef void (^RequestUploadDataBlock)(id<AFMultipartFormData>formData);
+//下载block
+typedef void (^RequestDownloadcompletionBlock)(NSURLResponse *response, NSURL *filePath, NSError *error);
 
 
 /* 请求配置的代理方法,本类已自己为代理,并实现所有方法做了默认配置.
@@ -64,6 +68,10 @@ typedef void (^RequestFailedBlock)(id request);
 - (RequestMethod)configureRequestMethod;//配置请求方法
 - (NSString *)configureBaseUrl;//配置baseUrl
 - (NSString *)configureUrl;//配置url
+
+- (NSData   *)configureDownloadResumeData;//配置下载的断点数据
+- (NSURL    *)configureDownloadDestinationPath:(NSURL *)targetPath response:(NSURLResponse *)response;//配置下载的目标目录
+
 - (NSDictionary *)configureHeader;//配置请求头
 //配置默认请求参数,请求时会和传进来的参数合并,并且传的参数会覆盖默认参数的相同项
 - (NSDictionary *)configureDefalutParams;
@@ -87,49 +95,49 @@ typedef void (^RequestFailedBlock)(id request);
 //请求已经获取参数和请求配置
 -(BOOL)requestProgressDidGetParams:(TFBaseRequest *)request;
 //请求将要开始发送请求,如需在请求前修改请求配置或者参数,重写此方法即可
--(BOOL)requestProgressWillSendRequest:(TFBaseRequest *)request task:(NSURLSessionDataTask *)task;
+-(BOOL)requestProgressWillSendRequest:(TFBaseRequest *)request task:(NSURLSessionTask *)task;
 //请求-上传请求已经拼接完上传的数据,如需修改上传数据重写此方法即可
 -(void)requestProgressUploadDidJointedFormdataRequest:(TFBaseRequest *)request
-                                                 task:(NSURLSessionDataTask *)task
+                                                 task:(NSURLSessionTask *)task
                                              formData:(id)formData;
 //请求已经发送请求,正在等待服务器返回结果
 -(void)requestProgressDidSendRequest:(TFBaseRequest *)request
-                                task:(NSURLSessionDataTask *)task;
+                                task:(NSURLSessionTask *)task;
 //请求已经发送,回调请求(上传、下载)进度
 -(void)requestProgressProgressingRequest:(TFBaseRequest *)request
-                                    task:(NSURLSessionDataTask *)task
+                                    task:(NSURLSessionTask *)task
                                 progress:(NSProgress *)progress;
 //请求完成
 -(void)requestProgressDidFinishRequest:(TFBaseRequest *)request
-                                  task:(NSURLSessionDataTask *)task
+                                  task:(NSURLSessionTask *)task
                         responseObject:(id)responseObject;
 //请求取消
 -(void)requestProgressDidCancelRequest;
 //请求失败
 -(void)requestProgressDidFailedRequest:(TFBaseRequest *)request
-                                  task:(NSURLSessionDataTask *)task
+                                  task:(NSURLSessionTask *)task
                              withError:(NSError*)error;
 //请求完成,将要回调到请求完成block
 -(BOOL)requestProgressWillFinishCallBack:(TFBaseRequest *)request
-                                    task:(NSURLSessionDataTask *)task
+                                    task:(NSURLSessionTask *)task
                                 progress:(NSProgress *)progress
                           responseObject:(id)responseObject
                                withError:(NSError*)error;
 //请求完成,已经回调到请求完成block
 -(void)requestProgressDidFinishCallBack:(TFBaseRequest *)request
-                                   task:(NSURLSessionDataTask *)task
+                                   task:(NSURLSessionTask *)task
                                progress:(NSProgress *)progress
                          responseObject:(id)responseObject
                               withError:(NSError*)error;
 //请求完成,将要回调到请求失败block
 -(BOOL)requestProgressWillFailedCallBack:(TFBaseRequest *)request
-                                    task:(NSURLSessionDataTask *)task
+                                    task:(NSURLSessionTask *)task
                                 progress:(NSProgress *)progress
                           responseObject:(id)responseObject
                                withError:(NSError*)error;
 //请求完成,已经回调到请求失败block
 -(void)requestProgressDidFailedCallBack:(TFBaseRequest *)request
-                                   task:(NSURLSessionDataTask *)task
+                                   task:(NSURLSessionTask *)task
                                progress:(NSProgress *)progress
                          responseObject:(id)responseObject
                               withError:(NSError*)error;
@@ -143,11 +151,13 @@ typedef void (^RequestFailedBlock)(id request);
 @property (nonatomic,   weak) id<TFRequestParamDelegate> paramDelegate;
 @property (nonatomic,   weak) id<TFBaseRequestDelegate> requestDelegate;
 
-@property (nonatomic, strong) NSURLSessionDataTask  *task;
+@property (nonatomic, strong) NSURLSessionTask  *task;
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
+@property (nonatomic, strong) NSURLResponse *response;
 
 @property (nonatomic,   copy) RequestStartBlock startBlock;
 @property (nonatomic,   copy) RequestUploadDataBlock uploadBlock;
+@property (nonatomic,   copy) RequestDownloadcompletionBlock downloadcompletionBlock;
 @property (nonatomic,   copy) RequestFinishBlock finishBlock;
 @property (nonatomic,   copy) RequestCanceledBlock canceledBlock;
 @property (nonatomic,   copy) RequestFailedBlock failedBlock;
@@ -158,6 +168,7 @@ typedef void (^RequestFailedBlock)(id request);
 @property (nonatomic,   copy) NSString *url;//请求的url,最终会和baseUrl,拼成totalUrl
 @property (nonatomic,   copy) NSString *baseUrl;//baseUrl,最终会和url,拼成totalUrl
 @property (nonatomic,   copy) NSString *totalUrl;//baseUrl和url拼的
+@property (nonatomic,   copy) NSURLRequest *downLoadRequest;//下载的Request
 @property (nonatomic, assign) RequestType requestType;//请求类型
 @property (nonatomic, assign) RequestMethod requestMethod;//请求方法
 @property (nonatomic, strong) AFSecurityPolicy *securityPolicy;//隐私策略
@@ -176,6 +187,11 @@ typedef void (^RequestFailedBlock)(id request);
 //以下参数可在代理方法requestProgressDidFinishRequest时(后)取到
 @property (nonatomic, strong) id responseObject;
 @property (nonatomic, strong) id responseJson;
+
+//请求开始和结束的时间
+@property (nonatomic, assign) CFAbsoluteTime startTime;
+@property (nonatomic, assign) CFAbsoluteTime endTime;
+
 
 
 +(instancetype)requestWithDic:(NSDictionary *)dic
@@ -203,7 +219,6 @@ typedef void (^RequestFailedBlock)(id request);
                   requestFinish:(RequestFinishBlock)finish
                   requestFailed:(RequestFailedBlock)failed;
 
-
 +(instancetype)requestWithParam:(TFRequestParam *)param
                          inView:(UIView *)inView
                    requestStart:(RequestStartBlock)start
@@ -213,11 +228,19 @@ typedef void (^RequestFailedBlock)(id request);
                 requestCanceled:(RequestCanceledBlock)canceled
                   requestFailed:(RequestFailedBlock)failed;
 
+
++(instancetype)requestWithDownloadRequest:(NSURLRequest *)downRequest
+                                   inView:(UIView *)inView
+                             requestStart:(RequestStartBlock)start
+                          requestProgress:(RequestProgressBlock)progress
+                               completion:(RequestDownloadcompletionBlock)completion;
+
 -(instancetype)initWithParam:(TFRequestParam *)param
                       inView:(UIView *)inView
                 requestStart:(RequestStartBlock)start
                requestUpload:(RequestUploadDataBlock)upload
              requestProgress:(RequestProgressBlock)progress
+                  completion:(RequestDownloadcompletionBlock)completion
                requestFinish:(RequestFinishBlock)finish
              requestCanceled:(RequestCanceledBlock)canceled
                requestFailed:(RequestFailedBlock)failed;
