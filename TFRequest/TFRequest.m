@@ -43,65 +43,85 @@
 
 
 - (void)doLogWithSuccess:(BOOL)suc{
-    if (self.params.closeLog) {
-        return;
-    }
+    
+    BOOL doLog = NO;
 #ifdef DEBUG
-    NSData *data = nil;
-    id json = nil;
-    @try {
-        json = [NSJSONSerialization JSONObjectWithData:self.responseObject
-                                               options:NSJSONReadingMutableLeaves
-                                                 error:nil];
-    }@catch (NSException *exception) {} @finally {}
-    
-    @try {
-        data = [NSJSONSerialization dataWithJSONObject:json
-                                               options:NSJSONWritingPrettyPrinted
-                                                 error:nil];
-    } @catch (NSException *exception) {} @finally {}
-    
-    NSString * dataString;
-    if (data) {
-        dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    if (self.params.closeLog == NO) {
+        doLog = YES;
     }
-    NSMutableString *log = [NSMutableString string];
-    [log appendFormat:@"\n===================== request-begin ====================="];
-    [log appendFormat:@"\n"];
-    [log appendFormat:@"\n 【time】:(%@)",[NSDate date]];
-    [log appendFormat:@"\n"];
-    [log appendFormat:@"\n [#placeholder#]"];
-    [log appendFormat:@"\n"];
-    [log appendFormat:@"\n 【url】:(%@)",self.totalUrl];
-    [log appendFormat:@"\n"];
-    [log appendFormat:@"\n 【custem-header】:(%@)",self.header];
-    [log appendFormat:@"\n"];
-    [log appendFormat:@"\n 【all-header】:(%@)",self.task.currentRequest.allHTTPHeaderFields];
-    [log appendFormat:@"\n"];
-    [log appendFormat:@"\n 【param】:%@",self.params.param];
-    [log appendFormat:@"\n"];
-    [log appendFormat:@"\n 【defalutParams】:%@",self.defalutParams];
-    [log appendFormat:@"\n"];
-    [log appendFormat:@"\n 【totalParams】:%@",self.totalParams];
-    [log appendFormat:@"\n"];
-    if(suc){
-        [log appendFormat:@"\n【server origin data】:%@",[[NSString alloc]initWithData:self.responseObject encoding:NSUTF8StringEncoding]];
-        [log appendFormat:@"\n"];
-        [log appendFormat:@"\n【server origin json】:%@",self.responseJson];
-        [log appendFormat:@"\n"];
-        [log appendFormat:@"\n【server origin json to chinese】:%@",dataString];
-    }else{
-        [log appendFormat:@"\n【error】:%@",self.error];
+#else
+    if (self.configureCollectionLogIfRelease) {
+        doLog = YES;
     }
-    [log appendFormat:@"\n"];
-    [log appendFormat:@"\n [#placeholder#]"];
-    [log appendFormat:@"\n"];
-    [log appendFormat:@"\n===================== request-end ====================="];
-    
-    [[TFRequestManager shareInstance] addLog:[NSString stringWithString:log]];
-    RequestLog(@"%@",log);
-    
 #endif
+    if (doLog) {
+        NSData *data = nil;
+        id json = nil;
+        NSMutableString *log = [NSMutableString string];
+        [log appendFormat:@"\n===================== request-begin ====================="];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n 【request-time】：%f",self.endTime - self.startTime];
+        if (self.responseObject) {
+            @try {
+                json = [NSJSONSerialization JSONObjectWithData:self.responseObject
+                                                       options:NSJSONReadingMutableLeaves
+                                                         error:nil];
+            }@catch (NSException *exception) {
+                [log appendFormat:@"\n"];
+                [log appendFormat:@"\n 【responseObject->json解析异常】"];
+            } @finally {}
+        }
+        
+        if (json) {
+            @try {
+                data = [NSJSONSerialization dataWithJSONObject:json
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:nil];
+            } @catch (NSException *exception) {
+                [log appendFormat:@"\n"];
+                [log appendFormat:@"\n 【json->data解析异常】"];
+            } @finally {}
+        }
+        
+        
+        NSString * dataString;
+        if (data) {
+            dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        }
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n 【time】:(%@)",[NSDate date]];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n [#placeholder#]"];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n 【url】:(%@)",self.totalUrl];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n 【custem-header】:(%@)",self.header];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n 【all-header】:(%@)",self.task.currentRequest.allHTTPHeaderFields];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n 【param】:%@",self.params.param];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n 【defalutParams】:%@",self.defalutParams];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n 【totalParams】:%@",self.totalParams];
+        [log appendFormat:@"\n"];
+        if(suc){
+            [log appendFormat:@"\n【server origin data】:%@",[[NSString alloc]initWithData:self.responseObject encoding:NSUTF8StringEncoding]];
+            [log appendFormat:@"\n"];
+            [log appendFormat:@"\n【server origin json】:%@",self.responseJson];
+            [log appendFormat:@"\n"];
+            [log appendFormat:@"\n【server origin json to chinese】:%@",dataString];
+        }else{
+            [log appendFormat:@"\n【error】:%@",self.error];
+        }
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n [#placeholder#]"];
+        [log appendFormat:@"\n"];
+        [log appendFormat:@"\n===================== request-end ====================="];
+        
+        [[TFRequestManager shareInstance] addLog:[NSString stringWithString:log]];
+        RequestLog(@"%@",log);
+    }
 }
 
 @end

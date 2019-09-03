@@ -191,6 +191,9 @@
 - (NSDictionary *)configureDefalutParams{
     return @{};
 }
+-(BOOL)configureCollectionLogIfRelease{
+    return NO;
+}
 
 - (AFSecurityPolicy *)configureSecurityPolicy{
     AFSecurityPolicy *policy = [AFSecurityPolicy defaultPolicy];
@@ -300,6 +303,12 @@
     }else{
         _securityPolicy = nil;
     }
+    //获取release状态下是否收集bug
+    if([self.paramDelegate respondsToSelector:@selector(configureCollectionLogIfRelease)]){
+        _collectionLogIfRelease = [self.paramDelegate configureCollectionLogIfRelease];
+    }else{
+        _collectionLogIfRelease = NO;
+    }
     
     //拼接 baseUrl 和 Url
     if ([_baseUrl hasSuffix:@"/"]) {
@@ -358,7 +367,6 @@
     enUrl = [self.totalUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *enParam = [_totalParams isKindOfClass:[NSDictionary class]]?_totalParams:@{};
     __block NSURLSessionTask *sessionTask = nil;
-    
     
     //将要发送请求
     if([self.requestDelegate respondsToSelector:@selector(requestProgressWillSendRequest:task:)]){

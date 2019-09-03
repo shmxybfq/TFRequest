@@ -76,6 +76,7 @@ typedef void (^RequestDownloadcompletionBlock)(NSURLResponse *response, NSURL *f
 //配置默认请求参数,请求时会和传进来的参数合并,并且传的参数会覆盖默认参数的相同项
 - (NSDictionary *)configureDefalutParams;
 - (AFSecurityPolicy *)configureSecurityPolicy;//配置隐私策略
+- (BOOL)configureCollectionLogIfRelease;//release下是否收集log
 
 @end
 
@@ -168,7 +169,7 @@ typedef void (^RequestDownloadcompletionBlock)(NSURLResponse *response, NSURL *f
 @property (nonatomic,   copy) NSString *url;//请求的url,最终会和baseUrl,拼成totalUrl
 @property (nonatomic,   copy) NSString *baseUrl;//baseUrl,最终会和url,拼成totalUrl
 @property (nonatomic,   copy) NSString *totalUrl;//baseUrl和url拼的
-@property (nonatomic,   copy) NSURLRequest *downLoadRequest;//下载的Request
+@property (nonatomic, strong) NSURLRequest *downLoadRequest;//下载的Request
 @property (nonatomic, assign) RequestType requestType;//请求类型
 @property (nonatomic, assign) RequestMethod requestMethod;//请求方法
 @property (nonatomic, strong) AFSecurityPolicy *securityPolicy;//隐私策略
@@ -191,6 +192,7 @@ typedef void (^RequestDownloadcompletionBlock)(NSURLResponse *response, NSURL *f
 //请求开始和结束的时间
 @property (nonatomic, assign) CFAbsoluteTime startTime;
 @property (nonatomic, assign) CFAbsoluteTime endTime;
+@property (nonatomic, assign) BOOL collectionLogIfRelease;
 
 
 
