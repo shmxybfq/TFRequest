@@ -20,14 +20,12 @@
 -(instancetype)initWithCoder:(NSCoder *)aDecoder{
     self = [super init];
     if (self) {
-        _closeLog = [aDecoder decodeBoolForKey:@"_closeLog"];
         _param = [aDecoder decodeObjectForKey:@"_param"];
     }
     return self;
 }
 
 -(void)encodeWithCoder:(NSCoder *)aCoder{
-    [aCoder encodeBool:_closeLog forKey:@"_closeLog"];
     if (_param)[aCoder encodeObject:_param forKey:@"_param"];
 }
 

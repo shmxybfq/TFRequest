@@ -43,12 +43,9 @@
 
 
 - (void)doLogWithSuccess:(BOOL)suc{
-    
     BOOL doLog = NO;
 #ifdef DEBUG
-    if (self.params.closeLog == NO) {
-        doLog = YES;
-    }
+    doLog = YES;
 #else
     if (self.configureCollectionLogIfRelease) {
         doLog = YES;
