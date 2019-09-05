@@ -23,6 +23,13 @@
 #define kdeclare_weakself tf_weak_obj(self,weakSelf)
 #endif
 
+#ifndef tf_strong_obj
+#define tf_strong_obj(target,name)  __strong typeof(target) name = target;
+#endif
+#ifndef kdeclare_strongself
+#define kdeclare_strongself tf_strong_obj(self,strongSelf)
+#endif
+
 
 #ifdef DEBUG
 #   define RequestLog(fmt, ...) NSLog((@"\nfun:%s,line:%d\n" fmt @"\n"), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);

@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "TFRequest"
-  s.version      = "0.5.3"
+  s.version      = "0.5.5"
   s.summary      = "a afn sub classes"
   s.description  = <<-DESC
     a afn sub classes for self
