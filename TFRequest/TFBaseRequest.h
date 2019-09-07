@@ -111,11 +111,11 @@ typedef void (^RequestDownloadcompletionBlock)(NSURLResponse *response, NSURL *f
 //请求已经发送请求,正在等待服务器返回结果
 -(void)requestProgressDidSendRequest:(TFBaseRequest *)request
                                 task:(NSURLSessionTask *)task;
-//请求已经发送,回调请求(上传、下载)进度
+//请求已经发送,回调请求/上传/下载进度
 -(void)requestProgressProgressingRequest:(TFBaseRequest *)request
                                     task:(NSURLSessionTask *)task
                                 progress:(NSProgress *)progress;
-//请求完成
+//请求完成/下载完成/上传完成
 -(void)requestProgressDidFinishRequest:(TFBaseRequest *)request
                                   task:(NSURLSessionTask *)task
                         responseObject:(id)responseObject;
@@ -161,7 +161,8 @@ typedef void (^RequestDownloadcompletionBlock)(NSURLResponse *response, NSURL *f
 
 @property (nonatomic, strong) NSURLSessionTask  *task;
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
-@property (nonatomic, strong) NSURLResponse *response;
+@property (nonatomic, strong) NSURLResponse *downloadResponse;
+@property (nonatomic, strong) NSURL *downloadFilePath;
 
 @property (nonatomic,   copy) RequestStartBlock startBlock;
 @property (nonatomic,   copy) RequestUploadDataBlock uploadBlock;

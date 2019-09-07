@@ -175,7 +175,7 @@
 - (NSURL    *)configureDownloadDestinationPath:(NSURL *)targetPath response:(NSURLResponse *)response{
     NSString *date = [NSDate date].description;
     date = [date stringByReplacingOccurrencesOfString:@" " withString:@""];
-    NSString *filePath = [NSString stringWithFormat:@"%@%@.tmp",NSTemporaryDirectory(),date];
+    NSString *filePath = [NSString stringWithFormat:@"%@%@.file",NSTemporaryDirectory(),date];
     return [NSURL fileURLWithPath:filePath];
 }
 
@@ -335,6 +335,7 @@
     }
     
     self.task = [self sendRequest];
+    [self.task resume];
 }
 
 -(NSURLSessionTask *)sendRequest{
@@ -581,12 +582,13 @@
                                                                            progress:downloadProgress];
                     }
                 } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
-                    weakSelf.response = response;
                     return [weakSelf configureDownloadDestinationPath:targetPath response:response];
                 } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
                     //下载完成
+                    NSLog(@"下载完成2");
                     weakSelf.endTime = CFAbsoluteTimeGetCurrent();
-                    weakSelf.response = response;
+                    weakSelf.downloadResponse = response;
+                    weakSelf.downloadFilePath = filePath;
                     weakSelf.error = error;
                     if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFinishRequest:task:responseObject:)]){
                         [weakSelf.requestDelegate requestProgressDidFinishRequest:weakSelf
@@ -604,29 +606,31 @@
                             [weakSelf.requestDelegate requestProgressDidFinishCallBack:weakSelf
                                                                                   task:sessionTask
                                                                               progress:nil
-                                                                        responseObject:error
-                                                                             withError:nil];
+                                                                        responseObject:nil
+                                                                             withError:error];
                         }
                     }
                     [[TFRequestManager shareInstance]removeRequest:weakSelf];
                 }];
             }else{
                 self.startTime = CFAbsoluteTimeGetCurrent();
-                
                 sessionTask = [sessionManager downloadTaskWithRequest:self.downLoadRequest progress:^(NSProgress * _Nonnull downloadProgress) {
                     //正在下载
+                    NSLog(@"222");
                     if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
                         [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
                                                                                task:sessionTask
                                                                            progress:downloadProgress];
                     }
                 } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
-                    weakSelf.response = response;
+                    NSLog(@"111");
                     return [weakSelf configureDownloadDestinationPath:targetPath response:response];
                 } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
                     //下载完成
+                    NSLog(@"下载完成1");
                     weakSelf.endTime = CFAbsoluteTimeGetCurrent();
-                    weakSelf.response = response;
+                    weakSelf.downloadResponse = response;
+                    weakSelf.downloadFilePath = filePath;
                     weakSelf.error = error;
                     if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressDidFinishRequest:task:responseObject:)]){
                         [weakSelf.requestDelegate requestProgressDidFinishRequest:weakSelf
@@ -644,8 +648,8 @@
                             [weakSelf.requestDelegate requestProgressDidFinishCallBack:weakSelf
                                                                                   task:sessionTask
                                                                               progress:nil
-                                                                        responseObject:error
-                                                                             withError:nil];
+                                                                        responseObject:nil
+                                                                             withError:error];
                         }
                     }
                     [[TFRequestManager shareInstance]removeRequest:weakSelf];
