@@ -83,7 +83,7 @@ typedef void (^RequestDownloadcompletionBlock)(NSURLResponse *response, NSURL *f
 //配置默认请求参数,请求时会和传进来的参数合并,并且传的参数会覆盖默认参数的相同项
 - (NSDictionary *)configureDefalutParams;
 - (AFSecurityPolicy *)configureSecurityPolicy;//配置隐私策略
-- (BOOL)configureCollectionLogIfRelease;//release下是否收集log
+- (BOOL)configureCollectionLogIfRelease;//release下是否收集log,默认NO
 
 @end
 
