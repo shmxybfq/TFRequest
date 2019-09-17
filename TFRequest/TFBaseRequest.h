@@ -84,6 +84,7 @@ typedef void (^RequestDownloadcompletionBlock)(NSURLResponse *response, NSURL *f
 - (NSDictionary *)configureDefalutParams;
 - (AFSecurityPolicy *)configureSecurityPolicy;//配置隐私策略
 - (BOOL)configureCollectionLogIfRelease;//release下是否收集log
+- (NSTimeInterval)configureTimeoutInterval;//配置请求超时时间,默认30s
 
 @end
 
@@ -186,6 +187,8 @@ typedef void (^RequestDownloadcompletionBlock)(NSURLResponse *response, NSURL *f
 @property (nonatomic, strong) TFRequestParam *params;//请求参数
 @property (nonatomic, strong) NSMutableDictionary *defalutParams;//请求默认参数
 @property (nonatomic, strong) NSMutableDictionary *totalParams;//params.param和defalutParams的和
+@property (nonatomic, assign) NSTimeInterval timeoutInterval;//请求超时的时间
+
 
 //用户默认处理弹框和loading的view
 @property (nonatomic,   weak) UIView *inView;

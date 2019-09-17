@@ -202,6 +202,10 @@
     return policy;
 }
 
+-(NSTimeInterval)configureTimeoutInterval{
+    return 30.0;
+}
+
 
 -(instancetype)initWithParam:(TFRequestParam *)param
                       inView:(UIView *)inView
@@ -328,6 +332,9 @@
         [_totalParams addEntriesFromDictionary:_params.param];
     }
     
+    //请求超时时间
+    self.timeoutInterval = [self configureTimeoutInterval];
+    
     //参数准备完毕
     if([self.requestDelegate respondsToSelector:@selector(requestProgressDidGetParams:)]){
         progressContinue = [self.requestDelegate requestProgressDidGetParams:self];
@@ -353,7 +360,7 @@
         }break;
         default:break;
     }
-    sessionManager.requestSerializer.timeoutInterval = 30;
+    sessionManager.requestSerializer.timeoutInterval = self.timeoutInterval;
     sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
     if (self.header && [self.header isKindOfClass:[NSDictionary class]]) {
         NSArray *keys = self.header.allKeys;
@@ -585,7 +592,6 @@
                     return [weakSelf configureDownloadDestinationPath:targetPath response:response];
                 } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
                     //下载完成
-                    NSLog(@"下载完成2");
                     weakSelf.endTime = CFAbsoluteTimeGetCurrent();
                     weakSelf.downloadResponse = response;
                     weakSelf.downloadFilePath = filePath;
@@ -601,8 +607,8 @@
                                                                                       progress:nil
                                                                                 responseObject:nil
                                                                                      withError:error];
-                        if(weakSelf.finishBlock && con){
-                            weakSelf.finishBlock(weakSelf);
+                        if(weakSelf.downloadcompletionBlock && con){
+                            weakSelf.downloadcompletionBlock(response, filePath, error);
                             [weakSelf.requestDelegate requestProgressDidFinishCallBack:weakSelf
                                                                                   task:sessionTask
                                                                               progress:nil
@@ -616,18 +622,15 @@
                 self.startTime = CFAbsoluteTimeGetCurrent();
                 sessionTask = [sessionManager downloadTaskWithRequest:self.downLoadRequest progress:^(NSProgress * _Nonnull downloadProgress) {
                     //正在下载
-                    NSLog(@"222");
                     if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
                         [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
                                                                                task:sessionTask
                                                                            progress:downloadProgress];
                     }
                 } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
-                    NSLog(@"111");
                     return [weakSelf configureDownloadDestinationPath:targetPath response:response];
                 } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
                     //下载完成
-                    NSLog(@"下载完成1");
                     weakSelf.endTime = CFAbsoluteTimeGetCurrent();
                     weakSelf.downloadResponse = response;
                     weakSelf.downloadFilePath = filePath;
@@ -643,8 +646,8 @@
                                                                                       progress:nil
                                                                                 responseObject:nil
                                                                                      withError:error];
-                        if(weakSelf.finishBlock && con){
-                            weakSelf.finishBlock(weakSelf);
+                        if(weakSelf.downloadcompletionBlock && con){
+                            weakSelf.downloadcompletionBlock(response, filePath, error);
                             [weakSelf.requestDelegate requestProgressDidFinishCallBack:weakSelf
                                                                                   task:sessionTask
                                                                               progress:nil
