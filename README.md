@@ -9,7 +9,7 @@
 
 ## 架构流程图
 <div>
-<img src="https://github.com/shmxybfq/TFPopup/blob/master/Example/drag1.gif" width="100%" height="100%">
+<img src="https://github.com/shmxybfq/TFRequest/blob/master/TFRequest架构流程图.png" width="100%" height="100%">
 </div>
 
 
