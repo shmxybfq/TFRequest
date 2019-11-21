@@ -47,7 +47,8 @@
     self.textView.text = @"";
     __weak __typeof(self)weakSelf = self;
     
-    [TestRequest requestWithDic:nil requestFinish:^(TestRequest *request) {
+    
+    [TestRequest requestWithDic/*requestWithParam*/:nil inView:self.view requestFinish:^(TestRequest *request) {
         
 //        以下参数可以在请求完成后获得
 //        request.paramDelegate;
