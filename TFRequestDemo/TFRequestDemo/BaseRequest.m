@@ -15,7 +15,6 @@
 }
 
 #pragma mark ----------------------  配置请求参数   ----------------------
-
 -(NSString *)configureBaseUrl{
     return @"http://180.76.121.105:8296";
 }
@@ -23,13 +22,13 @@
 
 -(NSDictionary *)configureHeader{
     NSMutableDictionary *header = [NSMutableDictionary dictionary];
-    [header setObject:@"1" forKey:@"appBundleVersion"];
-    [header setObject:@"1.0" forKey:@"appVersion"];
-    [header setObject:@"US" forKey:@"countryCode"];
-    [header setObject:@"en" forKey:@"lang"];
     [header setObject:@"375x812" forKey:@"screenSize"];
     [header setObject:@"ios" forKey:@"source"];
-    [header setObject:@"12.1" forKey:@"systemVersion"];
+    //版本
+    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    [header setObject:version forKey:@"version"];
+    //设备系统版本号
+    [header setObject:[UIDevice currentDevice].systemVersion forKey:@"systemVersion"];
     return header;
 }
 
@@ -74,8 +73,9 @@
 //}
 
 
-#pragma mark ----------------------  监听(阻断)请求过程   ----------------------
-
+#pragma mark
+//----------------------  监听(阻断)请求过程   ----------------------
+//----------------------  也可以监听(阻断)其他请求过程   ----------------------
 - (BOOL)requestProgressDidGetParams:(TFBaseRequest *)request{
     
     return YES;

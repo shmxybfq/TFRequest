@@ -14,12 +14,28 @@
 
 
 ## 使用
-详情请参照demo
 
+### 普通请求
+<div>
+<img src="https://github.com/shmxybfq/TFRequest/blob/master/normal_request.png" width="100%" height="100%">
+</div>
+
+### 上传
+
+<div>
+<img src="https://github.com/shmxybfq/TFRequest/blob/master/upload_request.png" width="100%" height="100%">
+</div>
+
+### 下载
+
+<div>
+<img src="https://github.com/shmxybfq/TFRequest/blob/master/download_request.png" width="100%" height="100%">
+</div>
 
 ## 安装
 ```
 pod 'TFRequest'
+
 ```
 
 ## 如果

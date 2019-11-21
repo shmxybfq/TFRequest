@@ -20,6 +20,8 @@
 		2081C8A2221BE8C5009EE2CE /* TFBaseRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2081C8A1221BE8C5009EE2CE /* TFBaseRequest.m */; };
 		209D08A922200009007570EB /* BaseRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 209D08A822200009007570EB /* BaseRequest.m */; };
 		209D08AC222000A9007570EB /* TestRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 209D08AB222000A9007570EB /* TestRequest.m */; };
+		90983E2E23862F42007B635E /* UploadRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 90983E2D23862F42007B635E /* UploadRequest.m */; };
+		90983E3123862F53007B635E /* DownloadRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 90983E3023862F53007B635E /* DownloadRequest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +49,10 @@
 		209D08AB222000A9007570EB /* TestRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestRequest.m; sourceTree = "<group>"; };
 		236549FF0B54658154E92994 /* Pods-TFRequestDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TFRequestDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-TFRequestDemo/Pods-TFRequestDemo.release.xcconfig"; sourceTree = "<group>"; };
 		45C92653A6D7B166F9368774 /* libPods-TFRequestDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TFRequestDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		90983E2C23862F42007B635E /* UploadRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UploadRequest.h; sourceTree = "<group>"; };
+		90983E2D23862F42007B635E /* UploadRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UploadRequest.m; sourceTree = "<group>"; };
+		90983E2F23862F53007B635E /* DownloadRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadRequest.h; sourceTree = "<group>"; };
+		90983E3023862F53007B635E /* DownloadRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadRequest.m; sourceTree = "<group>"; };
 		BC8D317BFFD6FB21F9FB9085 /* Pods-TFRequestDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TFRequestDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TFRequestDemo/Pods-TFRequestDemo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,6 +95,10 @@
 				2081C884221BE724009EE2CE /* ViewController.m */,
 				209D08AA222000A9007570EB /* TestRequest.h */,
 				209D08AB222000A9007570EB /* TestRequest.m */,
+				90983E2C23862F42007B635E /* UploadRequest.h */,
+				90983E2D23862F42007B635E /* UploadRequest.m */,
+				90983E2F23862F53007B635E /* DownloadRequest.h */,
+				90983E3023862F53007B635E /* DownloadRequest.m */,
 				209D08A722200009007570EB /* BaseRequest.h */,
 				209D08A822200009007570EB /* BaseRequest.m */,
 				2081C896221BE743009EE2CE /* TFRequest */,
@@ -228,12 +238,14 @@
 			files = (
 				2081C885221BE724009EE2CE /* ViewController.m in Sources */,
 				2081C89F221BE8A3009EE2CE /* TFRequestParam.m in Sources */,
+				90983E3123862F53007B635E /* DownloadRequest.m in Sources */,
 				2081C899221BE7FF009EE2CE /* TFRequest.m in Sources */,
 				2081C89C221BE88F009EE2CE /* TFRequestManager.m in Sources */,
 				209D08AC222000A9007570EB /* TestRequest.m in Sources */,
 				209D08A922200009007570EB /* BaseRequest.m in Sources */,
 				2081C8A2221BE8C5009EE2CE /* TFBaseRequest.m in Sources */,
 				2081C890221BE726009EE2CE /* main.m in Sources */,
+				90983E2E23862F42007B635E /* UploadRequest.m in Sources */,
 				2081C882221BE724009EE2CE /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

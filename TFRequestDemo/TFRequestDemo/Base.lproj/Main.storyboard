@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -22,38 +20,59 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zOB-X4-dI7">
-                                <rect key="frame" x="30" y="80" width="315" height="50"/>
+                                <rect key="frame" x="30" y="60" width="70" height="50"/>
                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
+                                    <constraint firstAttribute="width" constant="70" id="Ij4-OH-wQg"/>
                                     <constraint firstAttribute="height" constant="50" id="TEY-nz-NMO"/>
                                 </constraints>
                                 <state key="normal" title="发送请求"/>
                             </button>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="日志显示区域" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="S7j-ev-Olh">
-                                <rect key="frame" x="20" y="150" width="335" height="497"/>
+                                <rect key="frame" x="20" y="130" width="335" height="517"/>
                                 <color key="backgroundColor" red="0.94509803920000002" green="0.95294117649999999" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N2r-Uc-mBV">
+                                <rect key="frame" x="110" y="60" width="70" height="50"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="上传"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EE7-Yb-zRz">
+                                <rect key="frame" x="190" y="60" width="70" height="50"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="下载"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="N2r-Uc-mBV" firstAttribute="leading" secondItem="zOB-X4-dI7" secondAttribute="trailing" constant="10" id="04q-9d-s23"/>
                             <constraint firstAttribute="trailing" secondItem="S7j-ev-Olh" secondAttribute="trailing" constant="20" id="3r0-PD-fIj"/>
                             <constraint firstItem="S7j-ev-Olh" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" id="Egk-AD-atG"/>
                             <constraint firstItem="zOB-X4-dI7" firstAttribute="top" secondItem="Xy4-Cp-P6W" secondAttribute="bottom" constant="60" id="OBR-fG-EPx"/>
+                            <constraint firstItem="EE7-Yb-zRz" firstAttribute="width" secondItem="zOB-X4-dI7" secondAttribute="width" id="Ogk-ew-nAA"/>
                             <constraint firstItem="OOT-nv-YIw" firstAttribute="top" secondItem="S7j-ev-Olh" secondAttribute="bottom" constant="20" id="Tep-UD-Wg9"/>
+                            <constraint firstItem="N2r-Uc-mBV" firstAttribute="width" secondItem="zOB-X4-dI7" secondAttribute="width" id="U0J-KU-eHY"/>
+                            <constraint firstItem="N2r-Uc-mBV" firstAttribute="height" secondItem="zOB-X4-dI7" secondAttribute="height" id="Vgt-O1-pBN"/>
                             <constraint firstItem="S7j-ev-Olh" firstAttribute="top" secondItem="zOB-X4-dI7" secondAttribute="bottom" constant="20" id="fTo-8L-Ilj"/>
-                            <constraint firstAttribute="trailing" secondItem="zOB-X4-dI7" secondAttribute="trailing" constant="30" id="jWn-r0-F1G"/>
+                            <constraint firstItem="EE7-Yb-zRz" firstAttribute="top" secondItem="zOB-X4-dI7" secondAttribute="top" id="kxX-kl-d2J"/>
                             <constraint firstItem="zOB-X4-dI7" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="30" id="pBk-22-RNv"/>
+                            <constraint firstItem="N2r-Uc-mBV" firstAttribute="top" secondItem="zOB-X4-dI7" secondAttribute="top" id="rrs-bu-MTE"/>
+                            <constraint firstItem="EE7-Yb-zRz" firstAttribute="leading" secondItem="N2r-Uc-mBV" secondAttribute="trailing" constant="10" id="w3n-PH-Dwd"/>
+                            <constraint firstItem="EE7-Yb-zRz" firstAttribute="height" secondItem="zOB-X4-dI7" secondAttribute="height" id="x3j-IF-tSw"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="downloadButton" destination="EE7-Yb-zRz" id="vWj-1V-sTy"/>
                         <outlet property="postButton" destination="zOB-X4-dI7" id="PcI-sY-FXq"/>
                         <outlet property="textView" destination="S7j-ev-Olh" id="Kzv-ef-3QY"/>
+                        <outlet property="uploadButton" destination="N2r-Uc-mBV" id="Ilo-Xl-D90"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="140" y="134"/>
         </scene>
     </scenes>
 </document>
