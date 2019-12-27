@@ -109,7 +109,8 @@
     NSString *url = [NSString stringWithFormat:@"http://5b0988e595225.cdn.sohucs.com/images/20171218/042d939d112146a8ac48ba584daa36d0.jpeg"];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
-    [DownloadRequest requestWithDownloadRequest:request inView:nil requestStart:^(DownloadRequest *request) {
+    TFRequestParam *param = [TFRequestParam new];//可自己创建此类的子类来协助实现更多需求
+    [DownloadRequest requestWithDownloadRequest:request param:param inView:nil requestStart:^(DownloadRequest *request) {
         
         
     } requestProgress:^(DownloadRequest *request, NSProgress *progress) {
