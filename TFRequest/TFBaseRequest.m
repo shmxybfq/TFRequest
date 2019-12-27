@@ -94,24 +94,26 @@
 
 
 +(instancetype)requestWithDownloadRequest:(NSURLRequest *)downRequest
+                                    param:(TFRequestParam *)param
                                    inView:(UIView *)inView
                              requestStart:(RequestStartBlock)start
                           requestProgress:(RequestProgressBlock)progress
                                completion:(RequestDownloadcompletionBlock)completion{
-    TFRequestParam *param = [TFRequestParam new];
-    id request =  [[[self class]alloc]initWithParam:param
-                                             inView:inView
-                                       requestStart:start
-                                      requestUpload:nil
-                                    requestProgress:progress
-                                         completion:completion
-                                      requestFinish:nil
-                                    requestCanceled:nil
-                                      requestFailed:nil];
-    ((TFBaseRequest *)request).downLoadRequest = downRequest;
-    [(TFBaseRequest *)request beginRequest];
-    return request;
+    
+    id request =  [[[self class]alloc]initWithParam:param?:[TFRequestParam new]
+                                                inView:inView
+                                          requestStart:start
+                                         requestUpload:nil
+                                       requestProgress:progress
+                                            completion:completion
+                                         requestFinish:nil
+                                       requestCanceled:nil
+                                         requestFailed:nil];
+       ((TFBaseRequest *)request).downLoadRequest = downRequest;
+       [(TFBaseRequest *)request beginRequest];
+       return request;
 }
+
 
 -(instancetype)initWithCoder:(NSCoder *)aDecoder{
     self = [super init];

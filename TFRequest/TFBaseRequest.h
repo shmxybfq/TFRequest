@@ -243,12 +243,13 @@ typedef void (^RequestDownloadcompletionBlock)(NSURLResponse *response, NSURL *f
                 requestCanceled:(RequestCanceledBlock)canceled
                   requestFailed:(RequestFailedBlock)failed;
 
-
 +(instancetype)requestWithDownloadRequest:(NSURLRequest *)downRequest
+                                    param:(TFRequestParam *)param
                                    inView:(UIView *)inView
                              requestStart:(RequestStartBlock)start
                           requestProgress:(RequestProgressBlock)progress
                                completion:(RequestDownloadcompletionBlock)completion;
+
 
 -(instancetype)initWithParam:(TFRequestParam *)param
                       inView:(UIView *)inView
