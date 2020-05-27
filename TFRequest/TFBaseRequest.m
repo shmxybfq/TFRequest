@@ -416,10 +416,15 @@
                                                                           progress:nil
                                                                     responseObject:responseObject
                                                                          withError:nil];
+                        [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                    }else{
+                        //因为con==NO时子类会阻断weakSelf.finishBlock的调用,为不影响block的回调所以此处不调用
+                        //[[TFRequestManager shareInstance]removeRequest:weakSelf];
+                        //需要子类调用weakSelf.finishBlock后手动销毁请求
                     }
                 }
                 
-                [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 //请求失败
                 weakSelf.endTime = CFAbsoluteTimeGetCurrent();
@@ -443,9 +448,13 @@
                                                                           progress:nil
                                                                     responseObject:nil
                                                                          withError:error];
+                        [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                    }else{
+                        //因为con==NO时子类会阻断weakSelf.finishBlock的调用,为不影响block的回调所以此处不调用
+                        //[[TFRequestManager shareInstance]removeRequest:weakSelf];
+                        //需要子类调用weakSelf.finishBlock后手动销毁请求
                     }
                 }
-                [[TFRequestManager shareInstance]removeRequest:weakSelf];
             }];
         }break;
         case RequestMethodGet:{
@@ -479,9 +488,13 @@
                                                                           progress:nil
                                                                     responseObject:responseObject
                                                                          withError:nil];
+                        [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                    }else{
+                        //因为con==NO时子类会阻断weakSelf.finishBlock的调用,为不影响block的回调所以此处不调用
+                        //[[TFRequestManager shareInstance]removeRequest:weakSelf];
+                        //需要子类调用weakSelf.finishBlock后手动销毁请求
                     }
                 }
-                [[TFRequestManager shareInstance]removeRequest:weakSelf];
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 //请求失败
                 weakSelf.endTime = CFAbsoluteTimeGetCurrent();
@@ -505,9 +518,14 @@
                                                                           progress:nil
                                                                     responseObject:nil
                                                                          withError:error];
+                        [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                    }else{
+                        //因为con==NO时子类会阻断weakSelf.finishBlock的调用,为不影响block的回调所以此处不调用
+                        //[[TFRequestManager shareInstance]removeRequest:weakSelf];
+                        //需要子类调用weakSelf.finishBlock后手动销毁请求
                     }
                 }
-                [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                
             }];
         }break;
         case RequestMethodUploadPost:{
@@ -548,9 +566,14 @@
                                                                           progress:nil
                                                                     responseObject:responseObject
                                                                          withError:nil];
+                        [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                    }else{
+                        //因为con==NO时子类会阻断weakSelf.finishBlock的调用,为不影响block的回调所以此处不调用
+                        //[[TFRequestManager shareInstance]removeRequest:weakSelf];
+                        //需要子类调用weakSelf.finishBlock后手动销毁请求
                     }
                 }
-                [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 //请求失败
                 weakSelf.endTime = CFAbsoluteTimeGetCurrent();
@@ -574,9 +597,13 @@
                                                                           progress:nil
                                                                     responseObject:nil
                                                                          withError:error];
+                        [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                    }else{
+                        //因为con==NO时子类会阻断weakSelf.finishBlock的调用,为不影响block的回调所以此处不调用
+                        //[[TFRequestManager shareInstance]removeRequest:weakSelf];
+                        //需要子类调用weakSelf.finishBlock后手动销毁请求
                     }
                 }
-                [[TFRequestManager shareInstance]removeRequest:weakSelf];
             }];
         }break;
         case RequestMethodDownload:{
@@ -616,9 +643,13 @@
                                                                               progress:nil
                                                                         responseObject:nil
                                                                              withError:error];
+                            [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                        }else{
+                            //因为con==NO时子类会阻断weakSelf.finishBlock的调用,为不影响block的回调所以此处不调用
+                            //[[TFRequestManager shareInstance]removeRequest:weakSelf];
+                            //需要子类调用weakSelf.finishBlock后手动销毁请求
                         }
                     }
-                    [[TFRequestManager shareInstance]removeRequest:weakSelf];
                 }];
             }else{
                 self.startTime = CFAbsoluteTimeGetCurrent();
@@ -655,9 +686,13 @@
                                                                               progress:nil
                                                                         responseObject:nil
                                                                              withError:error];
+                            [[TFRequestManager shareInstance]removeRequest:weakSelf];
+                        }else{
+                            //因为con==NO时子类会阻断weakSelf.finishBlock的调用,为不影响block的回调所以此处不调用
+                            //[[TFRequestManager shareInstance]removeRequest:weakSelf];
+                            //需要子类调用weakSelf.finishBlock后手动销毁请求
                         }
                     }
-                    [[TFRequestManager shareInstance]removeRequest:weakSelf];
                 }];
             }
         }
