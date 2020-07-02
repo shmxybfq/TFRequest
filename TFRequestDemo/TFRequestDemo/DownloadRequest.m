@@ -10,13 +10,14 @@
 
 @implementation DownloadRequest
 
+
 -(RequestMethod)configureRequestMethod {
     return RequestMethodDownload;
 }
 
 -(NSURL *)configureDownloadDestinationPath:(NSURL *)targetPath response:(NSURLResponse *)response{
-    NSAssert(NO, @"");
-    return nil;
+//    NSAssert(NO, @"");
+//    return nil;
     
     NSString *string = self.downLoadRequest.URL.absoluteString;
     NSString *filePath = [NSString stringWithFormat:@"%@%@",@"/Users/xxx/Desktop/trueResult/xxx.jpg",string];

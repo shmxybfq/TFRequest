@@ -134,7 +134,7 @@
     
     [UploadRequest requestWithParam:nil inView:self.view requestUpload:^(id<AFMultipartFormData> formData) {
         
-        NSData *imageData = nil;
+        NSData *imageData = UIImagePNGRepresentation([UIImage imageNamed:@"test_img"]);
         NSTimeInterval timeInterval = [NSDate timeIntervalSinceReferenceDate];
         [formData appendPartWithFileData:imageData name:@"file" fileName:[NSString stringWithFormat:@"%@.jpeg",@(timeInterval)] mimeType:@"image/jpeg"];
         

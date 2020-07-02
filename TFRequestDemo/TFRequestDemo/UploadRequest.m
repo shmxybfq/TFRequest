@@ -10,9 +10,9 @@
 
 @implementation UploadRequest
 
-//-(NSString *)configureBaseUrl{
-//    return @"http://180.76.121.105:8296";
-//}
+-(NSString *)configureBaseUrl{
+    return @"http://180.76.121.105:8296";
+}
 
 -(NSString *)configureUrl{
     return @"app/img/upload";
