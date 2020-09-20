@@ -57,7 +57,11 @@
         id json = nil;
         NSMutableString *log = [NSMutableString string];
         [log appendFormat:@"\n===================== request-begin ====================="];
-        if (self.responseObject) {
+        if (self.responseJson) {
+            
+            json = self.responseJson;
+            
+        }else if (self.responseObject) {
             @try {
                 json = [NSJSONSerialization JSONObjectWithData:self.responseObject
                                                        options:NSJSONReadingMutableLeaves
@@ -69,18 +73,23 @@
         }
         
         if (json) {
+            NSError *jsonToPrintError = nil;
             @try {
                 data = [NSJSONSerialization dataWithJSONObject:json
                                                        options:NSJSONWritingPrettyPrinted
-                                                         error:nil];
+                                                         error:&jsonToPrintError];
             } @catch (NSException *exception) {
                 [log appendFormat:@"\n"];
                 [log appendFormat:@"\n 【json->data解析异常】"];
             } @finally {}
+            if (jsonToPrintError == nil) {
+                
+            }
         }
         NSString * dataString;
         if (data) {
             dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            self.requestPrintJson = dataString;
         }
         [log appendFormat:@"\n"];
         [log appendFormat:@"\n【#placeholder#】"];
@@ -131,6 +140,8 @@
         [log appendFormat:@"\n【#placeholder#】"];
         [log appendFormat:@"\n"];
         [log appendFormat:@"\n===================== request-end =====================\n"];
+        
+        self.requestLog = log;
         
         [[TFRequestManager shareInstance] addLog:[NSString stringWithString:log]];
         RequestLog(@"%@",log);

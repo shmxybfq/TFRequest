@@ -11,6 +11,10 @@
 
 @interface TFRequest : TFBaseRequest
 
+//请求的log
+@property(nonatomic, copy) NSString *requestLog;
+//请求的log - 
+@property(nonatomic, copy) NSString *requestPrintJson;
 
 @end
 
