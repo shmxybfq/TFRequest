@@ -6,6 +6,6 @@ target 'TFRequestDemo' do
   # use_frameworks!
 
   # Pods for TFRequestDemo
-    pod 'AFNetworking'
+    pod 'AFNetworking', '~> 4.0'
 
 end
