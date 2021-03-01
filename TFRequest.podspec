@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "TFRequest"
-  s.version      = "1.4.0"
+  s.version      = "1.4.2"
   s.summary      = "a afn sub classes"
   s.description  = <<-DESC
     a afn sub classes for self
@@ -15,5 +15,5 @@ Pod::Spec.new do |s|
   s.source_files  = "TFRequest/*.{h,m}"
   s.exclude_files = "Classes/Exclude"
   s.requires_arc = true
-  s.dependency "AFNetworking", '~> 4.0.1'
+  s.dependency "AFNetworking"
 end
