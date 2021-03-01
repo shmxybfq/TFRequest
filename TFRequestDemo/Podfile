@@ -3,9 +3,9 @@
 
 target 'TFRequestDemo' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  # use_frameworks!
+   use_frameworks!
 
   # Pods for TFRequestDemo
-    pod 'AFNetworking', '~> 4.0'
+    pod 'AFNetworking', '~> 4.0.1'
 
 end

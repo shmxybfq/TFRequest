@@ -101,17 +101,17 @@
                                completion:(RequestDownloadcompletionBlock)completion{
     
     id request =  [[[self class]alloc]initWithParam:param?:[TFRequestParam new]
-                                                inView:inView
-                                          requestStart:start
-                                         requestUpload:nil
-                                       requestProgress:progress
-                                            completion:completion
-                                         requestFinish:nil
-                                       requestCanceled:nil
-                                         requestFailed:nil];
-       ((TFBaseRequest *)request).downLoadRequest = downRequest;
-       [(TFBaseRequest *)request beginRequest];
-       return request;
+                                             inView:inView
+                                       requestStart:start
+                                      requestUpload:nil
+                                    requestProgress:progress
+                                         completion:completion
+                                      requestFinish:nil
+                                    requestCanceled:nil
+                                      requestFailed:nil];
+    ((TFBaseRequest *)request).downLoadRequest = downRequest;
+    [(TFBaseRequest *)request beginRequest];
+    return request;
 }
 
 
@@ -387,12 +387,12 @@
     switch (self.requestMethod) {
         case RequestMethodPost:{
             self.startTime = CFAbsoluteTimeGetCurrent();
-            sessionTask = [sessionManager POST:enUrl parameters:enParam progress:^(NSProgress * _Nonnull downloadProgress) {
+            sessionTask = [sessionManager POST:enUrl parameters:enParam headers:self.header progress:^(NSProgress * _Nonnull uploadProgress) {
                 //正在请求
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
                     [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
                                                                            task:sessionTask
-                                                                       progress:downloadProgress];
+                                                                       progress:uploadProgress];
                 }
             } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 //请求完成
@@ -423,8 +423,6 @@
                         //需要子类调用weakSelf.finishBlock后手动销毁请求
                     }
                 }
-                
-                
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 //请求失败
                 weakSelf.endTime = CFAbsoluteTimeGetCurrent();
@@ -459,7 +457,7 @@
         }break;
         case RequestMethodGet:{
             self.startTime = CFAbsoluteTimeGetCurrent();
-            sessionTask = [sessionManager GET:enUrl parameters:enParam progress:^(NSProgress * _Nonnull downloadProgress) {
+            sessionTask = [sessionManager GET:enUrl parameters:enParam headers:self.header progress:^(NSProgress * _Nonnull downloadProgress) {
                 //正在请求
                 if([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressProgressingRequest:task:progress:)]){
                     [weakSelf.requestDelegate requestProgressProgressingRequest:weakSelf
@@ -525,12 +523,11 @@
                         //需要子类调用weakSelf.finishBlock后手动销毁请求
                     }
                 }
-                
             }];
         }break;
         case RequestMethodUploadPost:{
             self.startTime = CFAbsoluteTimeGetCurrent();
-            sessionTask = [sessionManager POST:enUrl parameters:enParam constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+            sessionTask = [sessionManager POST:enUrl parameters:enParam headers:self.header constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
                 if (weakSelf.uploadBlock) {
                     weakSelf.uploadBlock(formData);
                     if ([weakSelf.requestDelegate respondsToSelector:@selector(requestProgressUploadDidJointedFormdataRequest:task:formData:)]) {
@@ -573,7 +570,6 @@
                         //需要子类调用weakSelf.finishBlock后手动销毁请求
                     }
                 }
-                
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 //请求失败
                 weakSelf.endTime = CFAbsoluteTimeGetCurrent();
@@ -605,6 +601,7 @@
                     }
                 }
             }];
+            
         }break;
         case RequestMethodDownload:{
             NSData *data = [self configureDownloadResumeData];
