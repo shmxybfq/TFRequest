@@ -60,6 +60,7 @@ static const int _xrequest_max_count = 128;
             req.canceledBlock(req);
         }
         [req.task cancel];
+        [req.sessionManager invalidateSessionCancelingTasks:YES resetSession:YES];
         req.startBlock = nil;
         req.uploadBlock = nil;
         req.finishBlock = nil;

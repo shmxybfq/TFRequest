@@ -454,6 +454,8 @@
                     }
                 }
             }];
+            
+            
         }break;
         case RequestMethodGet:{
             self.startTime = CFAbsoluteTimeGetCurrent();
@@ -523,7 +525,9 @@
                         //需要子类调用weakSelf.finishBlock后手动销毁请求
                     }
                 }
+                
             }];
+            
         }break;
         case RequestMethodUploadPost:{
             self.startTime = CFAbsoluteTimeGetCurrent();
@@ -601,7 +605,6 @@
                     }
                 }
             }];
-            
         }break;
         case RequestMethodDownload:{
             NSData *data = [self configureDownloadResumeData];
